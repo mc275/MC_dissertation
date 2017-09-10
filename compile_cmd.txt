@@ -1,0 +1,1 @@
+xelatex -no-pdf -interaction=nonstopmode %.tex |bibtex % | xelatex -no-pdf -interaction=nonstopmode %.tex | xelatex -interaction=nonstopmode %.tex

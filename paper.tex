@@ -1,0 +1,155 @@
+%%==================================================
+%% paper.tex for BIT Master Thesis
+%% modified by yang yating
+%% version: 0.1
+%% last update: Dec 25th, 2016
+
+%% modified by Meng Chao
+%% version: 0.2
+%% last update: May 29th, 2017
+%%==================================================
+
+
+% ctex的bug问题
+\expandafter\def\csname CTEX@spaceChar\endcsname{\hspace{1em}}
+
+% 字号选项: cs4size 小四
+% 双面打印（注意字号设置）
+%\documentclass[cs4size, a4paper, cs4size, twoside]{bitmaster-xetex}
+% 单面打印（注意字号设置）
+\documentclass[cs4size, a4paer, cs4size, oneside, openany]{bitmaster-xetex}
+
+
+% 额外需要的库
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{multirow} 
+\usepackage{amsmath}
+\usepackage{amsfonts}
+%\usepackage{subcaption}			不能与cls中的subfigure同时使用
+%\usepackage[english]{babel}   		附录和参考文献的标题是英文
+
+
+% 文章部分
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 封面
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% 中文封面内容(关注内容而不是形式)
+\classification{V249}
+\UDC{620}
+
+\title{基于单目视觉的无人机同步定位与地图重建}
+\vtitle{基于单目视觉的无人机同步定位与地图重建}
+
+\author{孟超}
+\institute{宇航学院}
+\advisor{郭百巍副教授}
+\chairman{徐勇副教授}
+\degree{工学硕士}
+\major{航空宇航科学与技术}
+\school{北京理工大学}
+\defenddate{2018年1月}
+\studentnumber{2120150068}
+
+% 英文封面内容(关注内容而不是表现形式)
+\englishtitle{UAV Simultaneous Localization and Mapping\\Using Monocular Vision}
+\englishauthor{Chao Meng}
+\englishadvisor{Prof. Baiwei Guo}
+\englishchairman{Prof. Yong Xu}
+\englishschool{Beijing Insititute of Technology}
+\englishinstitute{School of Aerospace Engineering}
+\englishdegree{Master of Engineering}
+\englishmajor{Aeronautical Science and Technology}
+\englishdate{1，2018}
+
+% 封面,这个命令实现了形式，具体见.cls
+\maketitle
+
+% 英文封面
+\makeenglishtitle
+
+%打印竖排论文题目
+\makeVerticalTitle
+
+% 论文原创性声明和使用授权
+\makeDeclareOriginal
+
+% 前言
+\frontmatter
+\pagenumbering{Roman}
+
+\fancypagestyle{plain}{% 设置开章页页眉页脚风格
+  \fancyhf{}%
+  \fancyhead[C]{\zihao{5} {\songti 北京理工大学硕士学位论文}}  % 奇数页左页眉
+  %\fancyhead[RO]{\small {\it \leftmark}}                   % 奇数页左页眉
+  %\fancyhead[LE]{\small {\it \BIT@value@titlemark}} 	 % 偶数页左页眉
+  %\fancyhead[RE]{\small {\it 北京理工大学硕士学位论文}}       % 偶数页右页眉
+  \fancyfoot[C]{\zihao{5} {\songti \thepage}} %页脚格式
+}
+
+
+
+% 摘要
+\include{chapters/abstract}
+
+% 目录
+\tableofcontents
+% 表格索引
+%\listoftables
+% 插图索引
+%\listoffigures
+
+%\addcontentsline{toc}{chapter}{\listfigurename} %将表格索引加入全文目录
+%\addcontentsline{toc}{chapter}{\listtablename}  %将图索引加入全文目录
+
+% 主要符号、缩略词对照表
+% \include{body/symbol}
+
+% 正文
+\mainmatter
+
+% 各章正文内容
+\include{chapters/chapter1}
+\include{chapters/chapter2}
+\include{chapters/chapter3}
+\include{chapters/chapter4}
+
+\include{chapters/conclusion}
+
+
+
+% 附录(章节编号重新计算，使用字母进行编号)
+\appendix
+
+\renewcommand\theequation{\Alph{chapter}--\arabic{equation}}
+\renewcommand\thefigure{\Alph{chapter}--\arabic{figure}}
+\renewcommand\thetable{\Alph{chapter}--\arabic{table}}
+\include{chapters/app1} % 更新记录
+
+
+
+% 文后(无章节编号)
+\backmatter
+
+% 参考文献
+% 使用 BibTeX
+% 包含参考文献文件.bib
+{
+\zihao{5}
+%\bibliography{reference/chap1,reference/chap2} %多个章节的参考文献
+\bibliography{reference/chap1}
+}
+
+% 发表文章目录
+\include{chapters/pub}
+
+% 致谢
+\include{chapters/thanks}
+
+
+\end{document}

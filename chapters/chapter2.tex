@@ -1,0 +1,127 @@
+%%==================================================
+%% chapter02.tex for BIT Master Thesis
+%% modified by yang yating
+%% version: 0.1
+%% last update: Dec 25th, 2016
+
+%% modified by Meng Chao
+%% version: 0.2
+%% last update: May 29th, 2017
+%%==================================================
+\chapter{算法原理}
+\label{chap:PRINCIPLE}
+
+
+%2.1
+\section{Feature-Based and Direct Methods}
+The traditional feature-based approaches, both filtering-based and key frame-based, is to split the overall problem estimating geometric information from images into two sequential steps. Firstly, a series of feature observations is recognized from the image. Then the camera position, posture and scene geometry is computed as a function of these feature observations only. Splitting simplifies the overall problem, it comes with an important limitation. Only information that conforms to the feature type can be used. Kind of method is proposed in [3] such as edge-based or even region-based features.
+
+Direct visual odometry (VO) methods solve this limitation by optimizing the geometry directly on the image intensities，which use all information in the image. While direct image alignment is well-established for RGB-D or stereo sensors [4], only recently monocular direct VO algorithms have been proposed. Accurate and fully dense depth maps are computed using a variational formula which however is computationally demanding and requires a state-of-the-art GPU to run in real-time [5]. By combining direct tracking with key points, it can achieve high framerates even on embedded platform [6].
+
+
+%2.2
+\section{Pose Graph Optimization}
+It is a well-know and grown approach to optimize the estimate of the camera posture and position and improve the performance of the global map. This method considers that the world is represented as a number of key frames connected by pose-pose constraints, which can be optimized using a generic graph optimization framework like g2o.
+
+
+%2.3
+\section{Rigid Body and Similarity Transformations}
+A 3D rigid body transform $G{\rm{ }} \in {\rm{ }}SE(3)$  denotes rotation and translation in 3D,  i.e. is defined by
+
+\begin{equation}
+G=\left(
+    \begin{array}{cc}
+      R & t \\
+      0 & 1 \\
+    \end{array}
+  \right)
+    \ with
+    \ R\in SO(3)
+    \ and
+    \ t\in {\mathbb{R}}^{3}
+\end{equation}
+SE(3) and SO(3) is the concept of elements of Lie-Algebras.
+
+We define the 3D projective warp function $\omega $, which projects an image point ${\bf{p}}$ and its inverse depth ${\bf{d}}$ into a by $\xi $ transformed camera frame.
+
+\begin{equation}
+\begin{split}
+\omega(p,d,\xi):= \left(
+                     \begin{array}{c}
+                       x^{'}/z^{'} \\
+                       y^{'}/z^{'} \\
+                       1/z^{'} \\
+                     \end{array}
+                   \right) \ with \\
+                   \left(
+                     \begin{array}{c}
+                       x^{'} \\
+                       y^{'} \\
+                       z^{'} \\
+                       1 \\
+                     \end{array}
+                   \right):=\!exp_{\!se(\!3\!)}(\xi)
+                   \left(
+                     \begin{array}{c}
+                       p_{x}/d \\
+                       p_{y}/d  \\
+                       1/d  \\
+                       1 \\
+                     \end{array}
+                   \right)
+\end{split}
+\end{equation}
+
+A 3D similarity transform   denotes rotation, scaling and translation, i.e. is defined by
+
+\begin{equation}
+S=\left(
+    \begin{array}{cc}
+      sR & t \\
+      0 & 1 \\
+    \end{array}
+  \right)
+  \ with
+  \ R\in SO(3),t\in {\mathbb{R}}^{3}
+  \ and \ s\in {\mathbb{R}}^{+}
+\end{equation}
+
+As for rigid body transformations, a minimal representation is given by elements of the associated Lie-algebra $\xi  \in sim(3)$, which now have an additional degree of freedom, that is $\xi\in {\mathbb{R}}^{7}$.
+
+%2.4
+\section{Weighted Gauss-Newton Optimization on Lie-Manifolds}
+Two images are aligned by Gauss-Newton minimization of the photometric error
+\begin{equation}
+E(\xi)=\sum( I_{ref}(p_{i} - I( \omega( p_{i},D_{ref}(p_{i}),\xi ) ))^{2}
+\end{equation}
+which gives the maximum-likelihood estimator for ${\mathbf{\xi }}$ assuming Gaussian residuals. We use a left-compositional formulation. Starting with an initial estimate ${{\mathbf{\xi }}^{{\mathbf{(0)}}}}$, in each iteration a left-multiplied increment $\delta {{\mathbf{\xi }}^{{\mathbf{(n)}}}}$ is computed by solving for the minimum of Gauss-Newton second-order approximation of E.
+\begin{equation}
+\delta\xi^{n}=-(J^{T}J)^{-1}J^{T}r(\xi^{n}) \ with \  \left. J=\frac{\partial r(\varepsilon\circ\xi^{n})}{\partial \varepsilon} \right|_{\varepsilon=0}
+\end{equation}
+
+where ${\mathbf{J}}$ is the derivative of the stacked residual vector ${ r=(r_{1},...,r_{n})^{T} }$ with respect to a left-multiplied increment, and ${{\mathbf{J}}^{\mathbf{T}}}{\mathbf{J}}$ the Gauss-Newton approximation of the Hessian of $E$. The new estimate is then obtained by multiplication with the computed update
+
+\begin{equation}
+\xi ^{(n + 1)} = \delta \xi ^{(n)} \circ \xi ^{(n)}
+\end{equation}
+
+In order to be robust to outliers arising from occlusions or reflections, different weighting-schemes have been proposed by [7].
+
+\begin{equation}
+E(\xi)=\sum\limits_i \omega_{i}(\xi)r_{i}(\xi)
+\end{equation}
+and the update is computed as
+
+\begin{equation}
+\delta {\xi ^{(n)}} =  - (J^{T}WJ)^{ - 1}J^{T}W_{r}({\xi ^{(n)}})
+\end{equation}
+
+Assuming the residuals to be independent, the last iteration ${({J^T}WJ)^{ - 1}}$ is an estimate for the covariance   of a left-multiplied error onto the final result. The default type-implementation in g2o assumes right-multiplication [8].
+
+\begin{equation}
+\xi ^{(n)} = \varepsilon  \circ \xi _{true} \ with \ \varepsilon \sim N(0,\sum \varepsilon  )
+\end{equation}
+
+
+
+
