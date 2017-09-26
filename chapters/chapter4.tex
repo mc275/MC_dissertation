@@ -8,12 +8,12 @@
 %% version: 0.2
 %% last update: May 29th, 2017
 %%==================================================
-\chapter{实验与结果}
-\label{chap:EXPERIMENT}
+\chapter{基于特征的单目半稠密SLAM}
+\label{chap:Semi-Dense}
 We evaluate the LSD algorithm reliable performance on indoor and outdoor environment, recording with a hand-hold monocular camera. The trajectory is show in the mapping.
 
 % 4.1
-\section{Indoor Environment}
+\section{立体搜索约束}
 We evaluate the LSD algorithm hand holding camera in indoor environment. We test two time for the different sample key frames. The result is show in Fig.4 The picture (a) and (b) are the reference image and the key frame. The (c) and (d) are the reconstruction 3D map of the LSD-SLAM. The result is expressed the more key frames can be get the more detail of the environment, now that the noisy of the environment will affect the performance of LSD.
 
 \begin{figure}
@@ -46,8 +46,8 @@ We evaluate the LSD algorithm hand holding camera in indoor environment. We test
      \caption{The indoor LSD-SLAM Map}
 \end{figure}
 
-
-\section{Outdoor Environment}
+%4.2
+\section{基于IMU紧耦合的单目SLAM}
 We evaluate the LSD-SLAM performance in outdoor. We accomplish the reconstruction the 3D map in diverse scene which is different distance. The result is expressed in Fig.5
 
 The picture (a) and (b) are the different distance scene reference image for hand holding camera. The (c) and (d) is the reconstruction map of the LSD-SLAM. We can find that the mapping is completely reconstructed the scene information and the noisy is low in outdoor environment. This can be used in unmanned aerial vehicle(UAV) navigation and localization. The LSD-SLAM is reliable and robustness.
@@ -82,7 +82,8 @@ The picture (a) and (b) are the different distance scene reference image for han
      \caption{The outdoor LSD-SLAM Map}
 \end{figure}
 
-\section{Tum RGB-D Benchmark}
+%4.3
+\section{逆深度假设融合}
 
 \begin{table}
 \newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}
@@ -117,5 +118,11 @@ The picture (a) and (b) are the different distance scene reference image for han
 
 The LSD-SLAM is evaluated on the Tum dataset. It is very challenging because of containing fast rotational movement, strong motion blur and rolling shutter artifacts. The result is displayed in tableⅠand compared with other algorithm for the localization accuracy.We use the very first depth map to bootstrap the system and get the correct initial scale.
 
+%4.4
+\section{帧内逆深度假设一致性检验}
 
+
+
+%4.5
+\section{帧间逆深度假设一致性检验}
 

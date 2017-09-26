@@ -1,0 +1,47 @@
+%%==================================================
+%% chapter02.tex for BIT Master Thesis
+%% modified by yang yating
+%% version: 0.1
+%% last update: Dec 25th, 2016
+
+%% modified by Meng Chao
+%% version: 0.2
+%% last update: May 29th, 2017
+%%==================================================
+\chapter{基于单目视觉的无人机SLAM算法实验验证}
+\label{chap:Experiment}
+
+
+%6.1
+\section{基于特征的单目半稠密SLAM算法实验验证}
+
+\subsection{逆深度一致性检验对重构效果的影响}
+
+\subsection{定位精度}
+The traditional feature-based approaches, both filtering-based and key frame-based, is to split the overall problem estimating geometric information from images into two sequential steps. Firstly, a series of feature observations is recognized from the image. Then the camera position, posture and scene geometry is computed as a function of these feature observations only. Splitting simplifies the overall problem, it comes with an important limitation. Only information that conforms to the feature type can be used. Kind of method is proposed in [3] such as edge-based or even region-based features.
+
+Direct visual odometry (VO) methods solve this limitation by optimizing the geometry directly on the image intensities，which use all information in the image. While direct image alignment is well-established for RGB-D or stereo sensors [4], only recently monocular direct VO algorithms have been proposed. Accurate and fully dense depth maps are computed using a variational formula which however is computationally demanding and requires a state-of-the-art GPU to run in real-time [5]. By combining direct tracking with key points, it can achieve high framerates even on embedded platform [6].
+
+\subsection{重构效果}
+
+\subsection{飞行实验}
+
+
+%6.2
+\section{基于IMU预积分的视觉惯性单目SLAM算法实验验证}
+
+It is a well-know and grown approach to optimize the estimate of the camera posture and position and improve the performance of the global map. This method considers that the world is represented as a number of key frames connected by pose-pose constraints, which can be optimized using a generic graph optimization framework like g2o.
+
+\subsection{IMU状态初始化}
+
+\subsection{定位精度}
+
+\subsection{飞行实验}
+
+
+
+
+
+
+
+

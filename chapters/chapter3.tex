@@ -8,13 +8,14 @@
 %% version: 0.2
 %% last update: May 29th, 2017
 %%==================================================
-\chapter{算法介绍}
+\chapter{单目SLAM算法研究}
 \label{chap:ALGORITHM}
 This chapter summaries the complete algorithm firstly, and introduce the information of the global mapping in the section A. In section B to section E, the tracking of new frames, depth information estimation, key frame matching and Map representation and optimization will be described.
 
 
 %3.1
-\section{The Algorithm Overview}
+\section{基于单目的SLAM算法概述}
+
 The LSD-SLAM contains three essential parts, which is tracking, depth information estimation and map optimization. The algorithm construct is displayed in Fig.2.
 
 The tracking continuously tracks new camera images. It estimates their rigid body pose $\xi  \in se(3)$ about the current key frame, using the pose of the previous frame as initialization.
@@ -39,9 +40,13 @@ The LSD-SLAM complete working flow and algorithm processing is displayed in Figu
   %\label{referencename};
 \end{figure}
 
+\subsection{前端}
+
+\subsection{后端}
+
 
 %3.2
-\section{Tracking New Frames}
+\section{基于直接法的SLAM算法}
 The current frames will replace the current key frames according with the Direct SE(3) image alignment. An existing key frame ${k_i} = ({I_i},{D_i},{V_i})$, the relative posture ${\xi _{ji}} \in se(3)$ of a new image ${I_j}$ is obtained by minimizing the variance-normalized photometric error
 
 \begin{equation}
@@ -68,7 +73,7 @@ The formula (13) is the Huber norm and applied to the normalized residual.
 
 
 %3.3
-\section{Depth Map Estimation}
+\section{基于特征的SLAM算法}
 If the camera moves too far away from the existing map, a new key frame is created from the most recent tracked image. We threshold a weighted combination of relative distance and angle to the current key frame
 
 \begin{equation}
@@ -81,7 +86,7 @@ Once a new frame is chosen to become a key frame, its depth map is initialized b
 
 
 %3.4
-\section{Direct Image Alignment}
+\section{基于直接法和特征的SLAM算法比较}
 In contrast to RGB-D or Stereo SLAM, monocular SLAM is inherently scale-ambivalent, the absolute scale of the world is not observable. Over long trajectories this leads to scale-drift, which is one of the major sources of error [9]. Further, all distances are only defined up to scale, which causes threshold-based outlier rejection or parametrized robust kernels to be ill-defined.
 
 We select an advanced method in [1] for better perform direct, scale-drift image alignment, which is used to align two differently scaled key frames. For the photometric residual ${r_p}$, the depth residual ${r_d}$ which penalizes deviations in inverse depth between key frames, allowing to directly estimate the scaled transformation between them. The total error function becomes
@@ -112,7 +117,7 @@ Only if the two estimates are statistically similar, if formula (18) is sufficie
 
 
 %3.5
-\section{Map Representation and Optimization}
+\section{单目SLAM算法存在问题}
 The map is represented as a pose graph of keyframes: Each keyframe $\kappa_{i}$ consists of a camera image $I_{i}\!:\!\Omega_{D_{i}}\!\rightarrow \!{\mathbb{R}}$,an inverse depth map $D_{i}\!:\!\Omega_{D_{i}}\!\rightarrow \!{\mathbb{R}}^{+}$, and the variance of the inverse depth $ V_{i}\!:\!\Omega_{D_{i}}\!\rightarrow \!{\mathbb{R}}^{+}$.Note that the depth map and variance are only defined for a subset of pixels $ \Omega_{D_{i}}\!\subset\!\Omega_{i} $, containing all image regions in the vicinity of sufficiently large intensity gradient, hence semi-dense.Edges $ \varepsilon_{ji}$ between keyframes contain their relative alignment as similarity transform $ \xi_{ji}\in sim(3) $, as well as the corresponding covariance matrix $\Sigma_{ji} $
 
 The map, consisting of a set of keyframes and tracked sim(3)-constraints, is continuously optimized in the background using pose graph optimization. The
