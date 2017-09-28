@@ -10,43 +10,95 @@
 %%==================================================
 \chapter{单目SLAM算法研究}
 \label{chap:ALGORITHM}
-This chapter summaries the complete algorithm firstly, and introduce the information of the global mapping in the section A. In section B to section E, the tracking of new frames, depth information estimation, key frame matching and Map representation and optimization will be described.
-
 
 %3.1
-\section{基于单目的SLAM算法概述}
+%\section{引言}
+同步定位与地图重建算法利用多视图几何原理\upcite{[]}，根据获取的图像信息估计摄像头在陌生环境中的位姿，构建环境地图。如果获取图像信息时，仅使用一个摄像头，则称为单目SLAM。本章主要介绍经典视觉SLAM算法框架；研究基于该框架的两种主流单目SLAM算法，在相同数据集上对比分析两种算法的优缺点，结合无人机运动特性选择合适的SLAM算法。
 
-The LSD-SLAM contains three essential parts, which is tracking, depth information estimation and map optimization. The algorithm construct is displayed in Fig.2.
+%3.1
+\section{经典视觉SLAM算法框架}
+SLAM算法实际是状态估计问题，将传感器数据抽象为适于估计的数学模型，通过观测模型与运动模型估计系统状态。经典视觉SLAM算法框架一般包括3个部分：视觉里程计，后端优化和闭环检测。视觉里程计估计帧间运动和局部地图，把传感器数据抽象为适于估计的数学模型；后端优化则接收视觉里程计估计的不同时刻位姿和回环检测信息，根据观测模型和运动模型建立约束关系，估计优化相机位姿与地图点位置，得到全局一致的轨迹与地图；回环检测判断相机是否曾经到达过当前位置，如果检测到回环反馈则给后端进行优化处理。算法框架如图3.1所示，经典的视觉SLAM算法框架是过去十几年研究者们总结的成果，框架本身和所包含的算法已经较为成熟。本文研究内容主要是在该框架的基础上，针对单目SLAM算法存在的问题进行改进和完善。
+%图3.1 高翔论文图1.3
 
-The tracking continuously tracks new camera images. It estimates their rigid body pose $\xi  \in se(3)$ about the current key frame, using the pose of the previous frame as initialization.
 
-The depth information estimation uses tracked frames to either refine or replace the current key frame. Depth is refined by filtering over many per-pixel, small-baseline stereo comparisons coupled with interleaved spatial regularization [5]. Once a key frame is replaced as tracking reference and hence its depth information will not be refined further. It is combined the global map by the map optimization.
+%3.1.1
+\subsection{视觉里程计}
+SLAM是一个状态估计问题，然而实际的传感器输出大都很难直接作为状态估计模型的输入。因而视觉里程计的主要任务是根据传感器输入，估计图像$I_i \rightarrow I_j$的相对位姿$T_ij$，串联相对位姿并三角化观测到的地图点得到运动轨迹与局部地图，将图像数据抽象为适于估计的数学模型。视觉里程计一般只估计相邻时刻的运动，和再过往的状态没有关联。视觉里程计主要包括两个部分，传感器数据关联和运动估计，其算法流程如图3.2所示。根据视觉里程计传感器关联数据方式的不同，当前主流SLAM算法分为基于直接法和基于特征的SLAM算法，具体原理将在3.2节中详细介绍。
 
-The map is represented as a pose graph of key frames. This paper will keep correspondence with the convenient for describe [1]. Each key frame ${k_i}$ consists of a image ${I_i}$, an inverse depth information ${D_i}$ and the variance of the inverse depth ${V_i}$. Note that the depth information and variance are only defined for a subset of pixels ${\Omega _{{D_i}}} \in {\Omega _i}$ containing all image regions in the vicinity of sufficiently large intensity gradient. Edges ${\varepsilon _{ji}}$ between key frames contain their relative alignment as similarity transform ${\xi _{ji}} \in sim(3)$, as well as the corresponding covariance matrix ${\Sigma _{ji}}$.
+%图3.2 vo综述中的vo流程。
 
-\begin{figure}
-  \centering
-  \includegraphics[width=0.4\textwidth, height=0.6\textwidth]{figures/Fig2}
-  \caption{Overview of LSD-SLAM}
-  %\label{referencename};
-\end{figure}
+视觉里程计得到的轨迹和地图，由于在运动估计时只考虑了帧间的信息，每次估计都带有一定的误差，串联的轨迹无可避免会出现累计漂移，这将导致无法得到全局一致的轨迹与地图。需要通过后端优化算法进行处理，估计运动和周围环境空间的不确定性，减小估计误差，提高轨迹和地图的一致性。
 
-The LSD-SLAM complete working flow and algorithm processing is displayed in Figure 3.
 
-\begin{figure}
-  \centering
-  \includegraphics[width=0.45\textwidth]{figures/Fig3(2)}
-  \caption{LSD-SLAM working flow}
-  %\label{referencename};
-\end{figure}
+%3.1.2
+\subsection{后端优化}
+SLAM算法的后端优化将SLAM问题看作最大后验概率估计问题，且大都采用因子图的方式来推到变量之间的以来关系。一般的，假设代估计状态变量为$\mathcal{X}$，在SLAM中变量$\mathcal{X}$包括无人机的轨迹和地图点的位置。传感器可以获得一组测量值$Z=\lbrace z_k:k=1,\ldots ,m\rbrace$，且每个测量值可以表示为状态变量$\chi$的函数，例如$z_k=h_k\left( \mathcal{X}_k \right)+\epsilon_k$，其中$\mathcal{X}_k \in \mathcal{X}$是变量的子集，$h(\cdot)$表示传感器的观测模型，$\epsilon_k$是随机观测误差。
 
-\subsection{前端}
+在最大后验概率估计中，通过计算变量$\mathcal{X}^*$的概率分布来估计状态变量$\mathcal{X}$，$\mathcal{X}^*$表示最大后验概率$\mathds{P}\left(\mathcal{X} \vert Z\right)$：
+\begin{equation}
+\label{equ1}
+\mathcal{X}^* 
+\doteq 
+\argmax \limits_{\mathcal{X}} \mathds{P}\left(\mathcal{X} \vert Z\right) 
+=
+\argmax \limits_{\mathcal{X}}\mathds{P}\left(Z \vert \mathcal{X}  \right)\mathds{P}\left(\mathcal{X}\right)
+\end{equation}
+上式推导来源于贝叶斯定义。在公式\ref{equ1}中，$\mathds{P}\left(Z \vert \mathcal{X}  \right)$表示在状态变量$\mathcal{X}$分布确定情况下测量值$Z$的似然，$\mathds{P}\left(\mathcal{X}\right)$表示状态$\mathcal{X}$的先验概率。先验概率包括任何关于状态$\mathcal{X}$的先验信息，如果没有可用的先验信息，则$\mathds{P}\left(\mathcal{X}\right)$表示为一个常亮从而可以从优化过程中移除。在这种情况下，最大后验概率可以简化为极大似然估计。
 
-\subsection{后端}
+假设测量值$Z=\lbrace z_k:k=1,\ldots ,m\rbrace$相互独立(影响测量的噪声是不相关的)，公式\ref{equ1}可以因式分解为：
+\begin{equation}
+\label{equ2}
+\mathcal{X}^* 
+\doteq 
+\argmax \limits_{\mathcal{X}} \mathds{P}\left(\mathcal{X}\right) \prod \limits_{k=1}^{m} \mathds{P}\left(z_k \vert \mathcal{X}  \right)
+=
+\mathds{P}\left(\mathcal{X}\right) \prod \limits_{k=1}^{m} \mathds{P}\left(z_k \vert \mathcal{X}_k  \right)
+\end{equation}
+其中，等式右边的测量值$z_k$仅仅与状态变量$\mathcal{X}_k$的子集有关。为了更清楚的表示公式\ref{equ2}，假设观测模型的测量噪声$\epsilon_k$服从信息矩阵为$\Omega_k$的0均值高斯分布。测量值的似然可以表示为
+\begin{equation}
+\label{equ3}
+\mathds{P}\left(z_k \vert \mathcal{X}_k  \right) \varpropto \exp ( -{1 \over 2} \left\| h_k\left( \mathcal{X}_k \right) - z_k \right\|_{\Omega_k}^2 )
+\end{equation}
+其中，使用符号$\left\| e \right\|_{\Omega}^2 = e^T \Omega e$。类似的，假设先验也服从高斯分布：
+\begin{equation}
+\label{equ4}
+\mathds{P}\left( \mathcal{X}_k  \right) \varpropto \exp ( -{1 \over 2} \left\| h_0\left( \mathcal{X}_0 \right) - z_0 \right\|_{\Omega_0}^2 )
+\end{equation}
+其中$h_0(\cdot)$表示观测模型，先验均值为$z_0$，信息矩阵为$\Omega_0$。由于最大后验与最小负对数后验等价，则公式\ref{equ2}的最大后验估计可以表示为：
+\begin{equation}
+\label{equ5}
+\mathcal{X}^* 
+=
+\argmin \limits_{\mathcal{X}} - \log \left( \mathds{P}\left(\mathcal{X}\right) \prod \limits_{k=1}^{m} \mathds{P}\left(z_k \vert \mathcal{X}_k  \right) \right)
+=
+\argmin \limits_{\mathcal{X}} \sum \limits_{k=0}^{m} -{1 \over 2} \left\| h_k\left( \mathcal{X}_k \right) - z_k \right\|_{\Omega_k}^2
+\end{equation}
+公式\ref{equ5}的形式是典型的非线性最小二乘问题，其中$h_k{\cdot}$是一个非线性函数。需要注意的是，公式\ref{equ5}推导的前提是假设观测模型的观测噪声服从高斯分布。对于不同的观测噪声分布，将会得到不同的优化目标函数。例如，若观测噪声服从拉普拉斯分布，则公式\ref{equ5}的平方$l_2$范数应变为$l_1$范数。为了增加算法对于离群点的鲁棒性，通常使用鲁棒核函数替换公式\ref{equ5}中的平方$l_2$范数。
+
+公式\ref{equ5}的形式与运动结构学中的Bundle Adjustment(BA)问题相似。这是因为公式\ref{equ5}与BA都是从最大后验概率估计出发推导得到的。但是，SLAM问题具有两个特点。首先，不同于BA问题受限于几何模型约束，公式\ref{equ5}适用于各种传感器模型。比如惯性传感器，GPS，轮式传感器等。其次，公式\ref{equ5}是增量式的求解，在无人机运动时，可以获得新的观测值。
+
+对于解决公式\ref{equ5}的最小化问题，可通过连续线性化进行求解。例如高斯-牛顿法(G-N)和列文伯格-马夸尔特法(L-M)。
+
+
+\subsection{回环检测}
+
+
+
+
 
 
 %3.2
-\section{基于直接法的SLAM算法}
+\section{主流单目视觉SLAM算法研究}
+
+%3.2.1
+\subsection{基于直接法的SLAM算法}
+
+\subsection*{数据关联}
+
+\subsection*{运动估计}
+
+
+
 The current frames will replace the current key frames according with the Direct SE(3) image alignment. An existing key frame ${k_i} = ({I_i},{D_i},{V_i})$, the relative posture ${\xi _{ji}} \in se(3)$ of a new image ${I_j}$ is obtained by minimizing the variance-normalized photometric error
 
 \begin{equation}
@@ -72,8 +124,16 @@ The formula (13) is the Huber norm and applied to the normalized residual.
 \end{equation}
 
 
-%3.3
-\section{基于特征的SLAM算法}
+
+
+%3.2.2
+\subsection{基于特征的SLAM算法}
+
+\subsection*{数据关联}
+
+\subsection*{运动估计}
+
+
 If the camera moves too far away from the existing map, a new key frame is created from the most recent tracked image. We threshold a weighted combination of relative distance and angle to the current key frame
 
 \begin{equation}
@@ -85,8 +145,11 @@ Where W is a diagonal matrix containing the weights. Note that, as described in 
 Once a new frame is chosen to become a key frame, its depth map is initialized by projecting points from the previous key frame into it, followed by one iteration of spatial regularization and outlier removal [5]. Afterwards, the depth map is scaled to have a mean inverse depth of one -this scaling factor is directly incorporated into the sim(3) camera pose. Finally, it replaces the previous key frame and is used for tracking subsequent new frames.
 
 
-%3.4
-\section{基于直接法和特征的SLAM算法比较}
+
+%3.2.3
+\subsection{两种SLAM算法比较}
+
+
 In contrast to RGB-D or Stereo SLAM, monocular SLAM is inherently scale-ambivalent, the absolute scale of the world is not observable. Over long trajectories this leads to scale-drift, which is one of the major sources of error [9]. Further, all distances are only defined up to scale, which causes threshold-based outlier rejection or parametrized robust kernels to be ill-defined.
 
 We select an advanced method in [1] for better perform direct, scale-drift image alignment, which is used to align two differently scaled key frames. For the photometric residual ${r_p}$, the depth residual ${r_d}$ which penalizes deviations in inverse depth between key frames, allowing to directly estimate the scaled transformation between them. The total error function becomes
@@ -116,8 +179,14 @@ e\!(\!{\xi _{{j_k}i}},{\xi _{i{j_k}}})\!: \!= \!{\!(\!{\xi _{{j_k}i}} \!\circ \!
 Only if the two estimates are statistically similar, if formula (18) is sufficiently small, they are added to the global map. For this, the adjoint $Ad{j_{{j_k}i}}$ is used to transform ${\Sigma _{i{j_k}}}$ into the correct tangent space.
 
 
-%3.5
-\section{单目SLAM算法存在问题}
+
+
+%3.3
+\section{本章小结}
+
+
+
+
 The map is represented as a pose graph of keyframes: Each keyframe $\kappa_{i}$ consists of a camera image $I_{i}\!:\!\Omega_{D_{i}}\!\rightarrow \!{\mathbb{R}}$,an inverse depth map $D_{i}\!:\!\Omega_{D_{i}}\!\rightarrow \!{\mathbb{R}}^{+}$, and the variance of the inverse depth $ V_{i}\!:\!\Omega_{D_{i}}\!\rightarrow \!{\mathbb{R}}^{+}$.Note that the depth map and variance are only defined for a subset of pixels $ \Omega_{D_{i}}\!\subset\!\Omega_{i} $, containing all image regions in the vicinity of sufficiently large intensity gradient, hence semi-dense.Edges $ \varepsilon_{ji}$ between keyframes contain their relative alignment as similarity transform $ \xi_{ji}\in sim(3) $, as well as the corresponding covariance matrix $\Sigma_{ji} $
 
 The map, consisting of a set of keyframes and tracked sim(3)-constraints, is continuously optimized in the background using pose graph optimization. The

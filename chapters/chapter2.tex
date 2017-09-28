@@ -20,7 +20,7 @@ Direct visual odometry (VO) methods solve this limitation by optimizing the geom
 
 
 %2.2
-\section{多旋翼飞行器控制算法设计}
+\section{多旋翼飞行器控制算法研究}
 It is a well-know and grown approach to optimize the estimate of the camera posture and position and improve the performance of the global map. This method considers that the world is represented as a number of key frames connected by pose-pose constraints, which can be optimized using a generic graph optimization framework like g2o.
 
 
@@ -87,6 +87,11 @@ S=\left(
 \end{equation}
 
 As for rigid body transformations, a minimal representation is given by elements of the associated Lie-algebra $\xi  \in sim(3)$, which now have an additional degree of freedom, that is $\xi\in {\mathbb{R}}^{7}$.
+
+
+\section{本章小结}
+
+
 
 \iffalse
 %2.4
