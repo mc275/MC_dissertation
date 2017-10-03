@@ -17,22 +17,27 @@
 
 %3.1
 \section{经典视觉SLAM算法框架}
-SLAM算法实际是状态估计问题，将传感器数据抽象为适于估计的数学模型，通过观测模型与运动模型估计系统状态。经典视觉SLAM算法框架一般包括3个部分：视觉里程计，后端优化和闭环检测。视觉里程计估计帧间运动和局部地图，把传感器数据抽象为适于估计的数学模型；后端优化则接收视觉里程计估计的不同时刻位姿和回环检测信息，根据观测模型和运动模型建立约束关系，估计优化相机位姿与地图点位置，得到全局一致的轨迹与地图；回环检测判断相机是否曾经到达过当前位置，如果检测到回环反馈则给后端进行优化处理。算法框架如图3.1所示，经典的视觉SLAM算法框架是过去十几年研究者们总结的成果，框架本身和所包含的算法已经较为成熟。本文研究内容主要是在该框架的基础上，针对单目SLAM算法存在的问题进行改进和完善。
+SLAM算法实际是状态估计问题，将传感器数据抽象为适于估计的数学模型，通过观测模型与运动模型估计系统状态。经典视觉SLAM算法框架一般包括3个部分：视觉里程计，后端优化和闭环检测。视觉里程计估计帧间运动和局部地图，把传感器数据抽象为适于估计的数学模型；后端优化则接收视觉里程计估计的不同时刻位姿和回环检测信息，根据观测模型和运动模型建立约束关系，估计优化相机位姿与地图点位置，得到全局一致的轨迹与地图；回环检测判断相机是否曾经到达过当前位置，如果检测到回环反馈则给后端进行优化处理。算法框架如图\ref{fig1}所示，经典的视觉SLAM算法框架是过去十几年研究者们总结的成果，框架本身和所包含的算法已经较为成熟。本文研究内容主要是在该框架的基础上，针对单目SLAM算法存在的问题进行改进和完善。
 %图3.1 高翔论文图1.3
+\begin{figure}
+\label{fig1}
 
-
+\end{figure}
 %3.1.1
 \subsection{视觉里程计}
-SLAM是一个状态估计问题，然而实际的传感器输出大都很难直接作为状态估计模型的输入。因而视觉里程计的主要任务是根据传感器输入，估计图像$I_i \rightarrow I_j$的相对位姿$T_ij$，串联相对位姿并三角化观测到的地图点得到运动轨迹与局部地图，将图像数据抽象为适于估计的数学模型。视觉里程计一般只估计相邻时刻的运动，和再过往的状态没有关联。视觉里程计主要包括两个部分，传感器数据关联和运动估计，其算法流程如图3.2所示。根据视觉里程计传感器关联数据方式的不同，当前主流SLAM算法分为基于直接法和基于特征的SLAM算法，具体原理将在3.2节中详细介绍。
-
+SLAM是一个状态估计问题，然而实际的传感器输出大都很难直接作为状态估计模型的输入。因而视觉里程计的主要任务是根据传感器输入，估计图像$I_i \rightarrow I_j$的相对位姿$T_ij$，串联相对位姿并三角化观测到的地图点得到运动轨迹与局部地图，将图像数据抽象为适于估计的数学模型。视觉里程计一般只估计相邻时刻的运动，和再过往的状态没有关联。视觉里程计主要包括两个部分，传感器数据关联和运动估计，其算法流程如图\ref{fig2}所示。根据视觉里程计传感器关联数据方式的不同，当前主流SLAM算法分为基于直接法和基于特征的SLAM算法，具体原理将在3.2节中详细介绍。
 %图3.2 vo综述中的vo流程。
+\begin{figure}
+\label{fig2}
+
+\end{figure}
 
 视觉里程计得到的轨迹和地图，由于在运动估计时只考虑了帧间的信息，每次估计都带有一定的误差，串联的轨迹无可避免会出现累计漂移，这将导致无法得到全局一致的轨迹与地图。需要通过后端优化算法进行处理，估计运动和周围环境空间的不确定性，减小估计误差，提高轨迹和地图的一致性。
 
 
 %3.1.2
 \subsection{后端优化}
-SLAM算法的后端优化将SLAM问题看作最大后验概率估计问题，且大都采用因子图的方式来推到变量之间的以来关系。一般的，假设代估计状态变量为$\mathcal{X}$，在SLAM中变量$\mathcal{X}$包括无人机的轨迹和地图点的位置。传感器可以获得一组测量值$Z=\lbrace z_k:k=1,\ldots ,m\rbrace$，且每个测量值可以表示为状态变量$\chi$的函数，例如$z_k=h_k\left( \mathcal{X}_k \right)+\epsilon_k$，其中$\mathcal{X}_k \in \mathcal{X}$是变量的子集，$h(\cdot)$表示传感器的观测模型，$\epsilon_k$是随机观测误差。
+SLAM算法的后端优化将SLAM问题看作最大后验概率估计问题，且大都采用因子图的方式来推到变量之间的以来关系。一般的，假设代估计状态变量为$\mathcal{X}$，在SLAM中变量$\mathcal{X}$包括无人机的轨迹和地图点的位置。传感器可以获得一组测量值$Z=\lbrace z_k:k=1,\ldots ,m\rbrace$，且每个测量值可以表示为状态变量$\chi$的函数，例如$z_k=h_k\left( \mathcal{X}_k \right)+\epsilon_k$，其中$\mathcal{X}_k \in \mathcal{X}$是变量的子集，$h_k(\cdot)$表示传感器的观测模型，$\epsilon_k$是随机观测误差。
 
 在最大后验概率估计中，通过计算变量$\mathcal{X}^*$的概率分布来估计状态变量$\mathcal{X}$，$\mathcal{X}^*$表示最大后验概率$\mathds{P}\left(\mathcal{X} \vert Z\right)$：
 \begin{equation}
@@ -54,7 +59,18 @@ SLAM算法的后端优化将SLAM问题看作最大后验概率估计问题，且
 =
 \mathds{P}\left(\mathcal{X}\right) \prod \limits_{k=1}^{m} \mathds{P}\left(z_k \vert \mathcal{X}_k  \right)
 \end{equation}
-其中，等式右边的测量值$z_k$仅仅与状态变量$\mathcal{X}_k$的子集有关。为了更清楚的表示公式\ref{equ2}，假设观测模型的测量噪声$\epsilon_k$服从信息矩阵为$\Omega_k$的0均值高斯分布。测量值的似然可以表示为
+其中，等式右边的测量值$z_k$仅仅与状态变量$\mathcal{X}_k$的子集有关。
+
+公式\ref{equ2}可以因子图表示。待估计的状态变量用节点表示，似然$\mathds{P}\left(z_k \vert \mathcal{X}_k  \right)$和先验$\mathds{P}\left(\mathcal{X} \right)$由因子表示，因子建立了对节点子集的概率约束。因子图是一种建立第$k$个因子和对应状态变量$\mathcal{X}_k$依赖关系的图模型。因子图可以将SLAM问题可视化，便于理解，一个简单SLAM问题的因子图描述如图\ref{fig3}表示。
+% 综述因子图
+\begin{figure}
+\label{fig3}
+
+\end{figure}
+
+
+
+为了更清楚的表示公式\ref{equ2}，假设观测模型的测量噪声$\epsilon_k$服从信息矩阵为$\Omega_k$的0均值高斯分布。测量值的似然可以表示为
 \begin{equation}
 \label{equ3}
 \mathds{P}\left(z_k \vert \mathcal{X}_k  \right) \varpropto \exp ( -{1 \over 2} \left\| h_k\left( \mathcal{X}_k \right) - z_k \right\|_{\Omega_k}^2 )
@@ -77,11 +93,32 @@ SLAM算法的后端优化将SLAM问题看作最大后验概率估计问题，且
 
 公式\ref{equ5}的形式与运动结构学中的Bundle Adjustment(BA)问题相似。这是因为公式\ref{equ5}与BA都是从最大后验概率估计出发推导得到的。但是，SLAM问题具有两个特点。首先，不同于BA问题受限于几何模型约束，公式\ref{equ5}适用于各种传感器模型。比如惯性传感器，GPS，轮式传感器等。其次，公式\ref{equ5}是增量式的求解，在无人机运动时，可以获得新的观测值。
 
-对于解决公式\ref{equ5}的最小化问题，可通过连续线性化进行求解。例如高斯-牛顿法(G-N)和列文伯格-马夸尔特法(L-M)。
+对于解决公式\ref{equ5}的最小化问题，可通过连续线性化进行求解。例如高斯-牛顿法(G-N)和列文伯格-马夸尔特法(L-M)。高斯-牛顿方法从初始估计给定的初值$\hat{\mathcal{X}}$开始迭代，每次迭代时高斯-牛顿法估计公式\ref{equ5}的最小值
+\begin{equation}
+\label{equ6}
+\delta_\mathcal{X}^* 
+=
+\argmin \limits_{\delta_\mathcal{X}} {1 \over 2} \sum \limits_{k=0}^{m} \left\| A_k\delta_\mathcal{X}-b_k \right\|_{\Omega_k}^2
+=
+\argmin \limits_{\delta_\mathcal{X}} {1 \over 2} \left\| A_k\delta_\mathcal{X}-b \right\|_{\Omega}^2
+\end{equation}
+其中公式\ref{equ6}中的$\delta_\mathcal{X}$表示初始估计状态$\hat{\mathcal{X}}$的微小修正量。$A_k \doteq {\partial h_k(\mathcal{X}) \over \partial \mathcal{X}} $是观测模型$h_k(\cdot)$关于$\mathcal{X}$的雅各比，$b_k \doteq z_k-h(\mathcal{X})$表示测量值与观测模型输出的残差；公式\ref{equ6}右边的矩阵$A$，$b$是由$A_k$,$b_k$组成的矩阵；$\Omega$是由观测噪声信息矩阵$\Omega_k$组成的对角块矩阵。
 
+最小化公式\ref{equ6}对应的微小修正$\delta_\mathcal{X}^* $可以用下面的闭型公式计算
+\begin{equation}
+\label{equ7}
+\delta_\mathcal{X}^* = - \left( A^T \Omega A \right)^{-1} A^T \Omega b
+\end{equation}
+每次通过$\hat{\mathcal{X}} \leftarrow \hat{\mathcal{X}}+\delta_\mathcal{X}^*$迭代更新估计状态,矩阵$A^T \Omega A$称为Hessian矩阵。之前的推导过程中，我们假设$\mathcal{X}$属于向量空间。如果$\mathcal{X}$属于光滑的流形空间(如旋转)，则高斯-牛顿法的形式保持不边，但是迭代更新方程$\hat{\mathcal{X}} \leftarrow \hat{\mathcal{X}}+\delta_\mathcal{X}$会被更合适的映射法则取代。在机器人领域中，通常使用符号$\oplus$表示状态更新的映射关系，并且将状态的微小修正量$\delta_\mathcal{X}$定义在流形状态变量$\hat{\mathcal{X}}$的切空间上，此时的更新方程为$\hat{\mathcal{X}}  \leftarrow \hat{\mathcal{X}} \oplus \delta_\mathcal{X}$。
 
+现代SLAM算法最大的进步，在于认识到公式\ref{equ7}中的雅各比矩阵$A$的稀疏性，而矩阵$A$的稀疏性是由于因子图内在的拓扑逻辑所决定的，这可以利用线性方法快速求解估计状态的微小增量$\delta_\mathcal{X}^*$。此外，利用矩阵$A$的稀疏性可以设计增量式的求解方法，将更新后的状态变量作为新的观测值。当前主流SLAM后端优化库(如GTSAM,g2o,Ceres,iSAM，SLAM++)可以在几秒之内求解数以万计的状态变量。
+
+目前，通常使用最大后验估计，因子图优化，图优化，完全平滑和平滑映射来描述SLAM问题。其中特别需要介绍的描述方法是位姿图优化，位姿图中的状态变量是无人机运动中的采样位姿，约束是两位姿之间的相对运动约束。
+
+%3.1.3
 \subsection{回环检测}
 
+回环检测又称闭环检测，主要解决SLAM问题中位姿估计的轨迹随时间漂移的问题。
 
 
 
