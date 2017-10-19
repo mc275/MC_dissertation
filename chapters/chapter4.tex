@@ -42,40 +42,6 @@
 \section{立体搜索约束}
 本章提出改进的基于特征的单目SLAM算法可以提供相机位姿$R,t$, 用于像素对应匹配点的搜索进而得到像素逆深度假设。由于已知当前关键帧ORB特征点的深度信息，可以估计当前关键帧的最大逆深度$\rho_max$， 最小逆深度$\rho_min$和像素逆深度的先验信息$N\left( \rho_0,\sigma_{\rho_0}^2  \right)$，其中$\rho_{max}=\rho_0+2\sigma_{\rho_0}$，$\rho_{min}=\rho_0-2\sigma_{\rho_0}$。另外，通过Covisibility图可以获得与当前关键帧$K_i$具有最多共视关系的前$N$个关键帧的集合$K$，从而完成关键帧间的立体搜索。通过立体搜索约束求解当前关键帧的逆深度假设时，应在关键帧插入之后一个帧率的时间内不处理新插入关键帧。一方面可以避免由于局部BA导致的共视图结构变化；另一方面可以引入当前关键帧之后的关键帧，提高重建效果。
 
-\iffalse
-We evaluate the LSD algorithm hand holding camera in indoor environment. We test two time for the different sample key frames. The result is show in Fig.4 The picture (a) and (b) are the reference image and the key frame. The (c) and (d) are the reconstruction 3D map of the LSD-SLAM. The result is expressed the more key frames can be get the more detail of the environment, now that the noisy of the environment will affect the performance of LSD.
-
-\begin{figure}
-    \centering
-       %\begin{minipage}{5cm}
-       	  \subfigure[]
-       	  {
-          \includegraphics[scale=.2]{figures/Fig4(a)}          
-          %\subcaption{}
-          }                    
-          \subfigure[]
-       	  {
-          \includegraphics[scale=.2]{figures/Fig4(b)}
-          %\subcaption{}
-          }
-          \hspace{0in}
-     
-          \subfigure[]
-       	  {
-          \includegraphics[scale=.25]{figures/Fig4(c)}
-          %\subcaption{}
-		  }
-		  \subfigure[]
-       	  {          
-          \includegraphics[scale=.2]{figures/Fig4(d)}
-          %\subcaption{}
-          }
-          \hspace{0in}
-       %\end{minipage}
-     \caption{The indoor LSD-SLAM Map}
-\end{figure}
-
-\fi
 
 %4.2
 \section{极线搜索与块匹配}
@@ -166,6 +132,100 @@ u_0^* = u_0 + {{ r_I(u_0) g(u_0)+ {1 \over \theta} r_G(u_0)q(u_0) } \over {g^2(u
 在以上的逆深度假设推导过程中，并没有像直接法SLAM一样引入帧间小旋转运动假设，因而本算法的逆深度假设不确定性具有一般性。
 
 
+%4.3
+\section{逆深度假设融合}
+根据之前4.2节中介绍的方法，每个像素可以得到一组逆深度假设。由于存在极线上的像素逆深度立体搜索约束，且极线上匹配的像素需满足之前提到的像素梯度约束，因而逆深度假设的个数可能不足$N$个。另外，由于像素的相似性和遮挡，以上逆深度假设中存在离群值。为了验证像素逆深度假设，在像素对应的一组逆深度假设中至少应该找到$\lambda_N$个一致假设。利用$\chi^2$假设检验(置信区间$95\%$，自由度2)，验证两个逆深度假设分布的一致性。
+\begin{equation}
+\label{equ4.11}
+{ (\rho_a - \rho_b)^2 \over \sigma_a^2 }+{ (\rho_b - \rho_a)^2 \over \sigma_b^2} < 5.991
+\end{equation}
+
+每次从一组像素的逆深度假设中选取一个，与其他逆深度假设进行一致性检验，若与其一致的逆深度假设数量超过$\lambda_N$个，则对该组逆深度按照公式\ref{equ4.12}进行融合，像素$p$融合后的逆深度假设服从$N(\rho_p,\sigma_{\rho_p}^2)$，其中$n$表示通过检验的逆深度假设数量。
+\begin{equation}
+\label{equ4.12}
+\rho_p = { {\sum\limits_n {1 \over \sigma_{\rho_j}^2} \rho_j } \over \sum\limits_n {1 \over \sigma_{\rho_j}^2}  }, \ 
+\sigma_{\rho_p}^2 = {1 \over  \sum\limits_n { 1 \over \sigma_{\rho_j}^2}  }
+\end{equation}
+
+
+%4.4
+\section{帧内逆深度假设一致性检验}
+在完成当前关键帧$K_i$中像素的逆深度假设计算和融合后，需要对帧内所有逆深度假设进行一致性检验，用于剔除像素逆深度假设中的离群值。首先，通过公式\ref{equ4.11}检验某像素和它临近的8个像素点的逆深度假设的一致性，若一致的逆深度假设数量大于2，则保留该像素点的逆深度假设，否则剔除该点逆深度假设。若保留该像素，其逆深度根据公式\ref{equ4.12}进行融合，不确定性为所有参与逆深度假设检验的像素中的最小不确定性。对于处于像素灰度变化明显区域但没有逆深度假设的像素点，若在该像素周围至少有两个逆深度假设一致的像素，则给该像素点添加逆深度假设，逆深度为附近一致逆深度假设的逆深度均值，不确定性是附近一致逆深度假设中的最小值，该方法可以增加地图重建的稠密性，起到平滑地图的作用。
+
+%4.5
+\section{帧间逆深度假设一致性检验}
+在当前关键帧$K_i$的$N$个临近关键帧的逆深度地图全部计算完成后，对关键帧$K_i$中像素的逆深度假设进行帧间一致性检验。对于关键帧$K_i$中的像素$p$对应的逆深度$\rho_p$，将其投影到$K_i$临近的关键帧$K_j \in K$中，并计算像素$p$在关键帧$K_j \in K$中对应点的逆深度：
+\begin{equation}
+\label{equ4.13}
+\begin{aligned}
+& x_j = K R_{ji} {1 \over \rho_p} X_p + Kt_{ji} \\ 
+& \rho_j = { \rho_p \over r_z^{ji}X_p+\rho_p t_z^{ji} }
+\end{aligned}
+\end{equation}
+其中$x_{j}$表示关键帧$K_i$中的像素$p$在$K_j \in K$中对应点的像素坐标。若$x_j$不是证书像素坐标，搜索$x_{j}$临近的4个像素，通过$\chi^2$假设检验(置信区间$95\%$，自由度$1$)，检验是否与$x_j$逆深度假设一致。
+\begin{equation}
+\label{equ4.14}
+{ (\rho_j - \rho_{j,n})^2 \over \sigma_{\rho_{j,n}}^2 } < 3.84
+\end{equation}
+
+如果在$\rho_{j,n}$中存在与$x_j$逆深度假设一致的像素点，则可以保留像素点$x_j$的逆深度假设。如果在当前关键帧$K_i$的$N$个临近关键帧中至少有$\lambda_N$个关键帧可以找到像素p的对应像素点$x_j$的逆深度假设，则保留当前关键帧$K_i$中像素$p$的逆深度假设。
+
+最后对关键帧像素进行重投影，以深度$d_p = { 1 \over \rho_p }$为优化变量，利用公式\ref{equ4.15}通过高斯-牛顿方法最小化深度误差函数，优化像素点的逆深度，提高重构精度。
+\begin{equation}
+\label{equ4.15}
+d_p^* = \min_{d_p} \sum\limits_{j,n} \left( d_{j,n} - d_p r_z^{ji} X_p - t_z^{ji}  \right)^2  {1 \over {d_{j,n}^4 \sigma_{\rho_{j,n}}^2 }}
+\end{equation}
+优化的目标函数选择深度作为优化变量而不是逆深度，是因为从方程\ref{equ4.13}中可以发现，以深度作为变量时，深度误差函数是线性的。并考虑深度对应的不确定，不同深度置信度在总误差的权重不同，优化更为精确。
+
+
+
+
+\section{本章小结}
+
+采取了什么方法，针对出现的问题进行优化，表现出了比现有算法更好的性能。
+
+
+
+
+
+
+
+\iffalse
+We evaluate the LSD algorithm hand holding camera in indoor environment. We test two time for the different sample key frames. The result is show in Fig.4 The picture (a) and (b) are the reference image and the key frame. The (c) and (d) are the reconstruction 3D map of the LSD-SLAM. The result is expressed the more key frames can be get the more detail of the environment, now that the noisy of the environment will affect the performance of LSD.
+
+\begin{figure}
+    \centering
+       %\begin{minipage}{5cm}
+       	  \subfigure[]
+       	  {
+          \includegraphics[scale=.2]{figures/Fig4(a)}          
+          %\subcaption{}
+          }                    
+          \subfigure[]
+       	  {
+          \includegraphics[scale=.2]{figures/Fig4(b)}
+          %\subcaption{}
+          }
+          \hspace{0in}
+     
+          \subfigure[]
+       	  {
+          \includegraphics[scale=.25]{figures/Fig4(c)}
+          %\subcaption{}
+		  }
+		  \subfigure[]
+       	  {          
+          \includegraphics[scale=.2]{figures/Fig4(d)}
+          %\subcaption{}
+          }
+          \hspace{0in}
+       %\end{minipage}
+     \caption{The indoor LSD-SLAM Map}
+\end{figure}
+
+\fi
+
+
 
 \iffalse
 We evaluate the LSD-SLAM performance in outdoor. We accomplish the reconstruction the 3D map in diverse scene which is different distance. The result is expressed in Fig.5
@@ -203,20 +263,8 @@ The picture (a) and (b) are the different distance scene reference image for han
 \end{figure}
 \fi
 
-%4.3
-\section{逆深度假设融合}
-根据之前4.2节中介绍的方法，每个像素可以得到一组逆深度假设。由于存在极线上的像素逆深度立体搜索约束，且极线上匹配的像素需满足之前提到的像素梯度约束，因而逆深度假设的个数可能不足$N$个。另外，由于像素的相似性和遮挡，以上逆深度假设中存在离群值。为了验证像素逆深度假设，在像素对应的一组逆深度假设中至少应该找到$\lambda_N$个一致假设。利用$\chi^2$假设检验(置信区间$95\%$，自由度2)，验证两个逆深度假设分布的一致性。
-\begin{equation}
-\label{equ4.11}
-{ (\rho_a - \rho_b)^2 \over \sigma_a^2 }+{ (\rho_b - \rho_a)^2 \over \sigma_b^2} < 5.991
-\end{equation}
 
-每次从一组像素的逆深度假设中选取一个，与其他逆深度假设进行一致性检验，若与其一致的逆深度假设数量超过$\lambda_N$个，则对该组逆深度按照公式\ref{equ4.12}进行融合，像素$p$融合后的逆深度假设服从$N(\rho_p,\sigma_{\rho_p}^2)$，其中$n$表示通过检验的逆深度假设数量。
-\begin{equation}
-\label{equ4.12}
-\rho_p = { {\sum\limits_n {1 \over \sigma_{\rho_j}^2} \rho_j } \over \sum\limits_n {1 \over \sigma_{\rho_j}^2}  }, \ 
-\sigma_{\rho_p}^2 = {1 \over  \sum\limits_n { 1 \over \sigma_{\rho_j}^2}  }
-\end{equation}
+
 
 \iffalse
 \begin{table}
@@ -253,37 +301,3 @@ The picture (a) and (b) are the different distance scene reference image for han
 The LSD-SLAM is evaluated on the Tum dataset. It is very challenging because of containing fast rotational movement, strong motion blur and rolling shutter artifacts. The result is displayed in tableⅠand compared with other algorithm for the localization accuracy.We use the very first depth map to bootstrap the system and get the correct initial scale.
 
 \fi
-
-%4.4
-\section{帧内逆深度假设一致性检验}
-在完成当前关键帧$K_i$中像素的逆深度假设计算和融合后，需要对帧内所有逆深度假设进行一致性检验，用于剔除像素逆深度假设中的离群值。首先，通过公式\ref{equ4.11}检验某像素和它临近的8个像素点的逆深度假设的一致性，若一致的逆深度假设数量大于2，则保留该像素点的逆深度假设，否则剔除该点逆深度假设。若保留该像素，其逆深度根据公式\ref{equ4.12}进行融合，不确定性为所有参与逆深度假设检验的像素中的最小不确定性。对于处于像素灰度变化明显区域但没有逆深度假设的像素点，若在该像素周围至少有两个逆深度假设一致的像素，则给该像素点添加逆深度假设，逆深度为附近一致逆深度假设的逆深度均值，不确定性是附近一致逆深度假设中的最小值，该方法可以增加地图重建的稠密性，起到平滑地图的作用。
-
-%4.5
-\section{帧间逆深度假设一致性检验}
-在当前关键帧$K_i$的$N$个临近关键帧的逆深度地图全部计算完成后，对关键帧$K_i$中像素的逆深度假设进行帧间一致性检验。对于关键帧$K_i$中的像素$p$对应的逆深度$\rho_p$，将其投影到$K_i$临近的关键帧$K_j \in K$中，并计算像素$p$在关键帧$K_j \in K$中对应点的逆深度：
-\begin{equation}
-\label{equ4.13}
-\begin{aligned}
-& x_j = K R_{ji} {1 \over \rho_p} X_p + Kt_{ji} \\ 
-& \rho_j = { \rho_p \over r_z^{ji}X_p+\rho_p t_z^{ji} }
-\end{aligned}
-\end{equation}
-其中$x_{j}$表示关键帧$K_i$中的像素$p$在$K_j \in K$中对应点的像素坐标。若$x_j$不是证书像素坐标，搜索$x_{j}$临近的4个像素，通过$\chi^2$假设检验(置信区间$95\%$，自由度$1$)，检验是否与$x_j$逆深度假设一致。
-\begin{equation}
-\label{equ4.14}
-{ (\rho_j - \rho_{j,n})^2 \over \sigma_{\rho_{j,n}}^2 } < 3.84
-\end{equation}
-
-如果在$\rho_{j,n}$中存在与$x_j$逆深度假设一致的像素点，则可以保留像素点$x_j$的逆深度假设。如果在当前关键帧$K_i$的$N$个临近关键帧中至少有$\lambda_N$个关键帧可以找到像素p的对应像素点$x_j$的逆深度假设，则保留当前关键帧$K_i$中像素$p$的逆深度假设。
-
-最后对关键帧像素进行重投影，以深度$d_p = { 1 \over \rho_p }$为优化变量，利用公式\ref{equ4.15}通过高斯-牛顿方法最小化深度误差函数，优化像素点的逆深度，提高重构精度。
-\begin{equation}
-\label{equ4.15}
-d_p^* = \min_{d_p} \sum\limits_{j,n} \left( d_{j,n} - d_p r_z^{ji} X_p - t_z^{ji}  \right)^2  {1 \over {d_{j,n}^4 \sigma_{\rho_{j,n}}^2 }}
-\end{equation}
-优化的目标函数选择深度作为优化变量而不是逆深度，是因为从方程\ref{equ4.13}中可以发现，以深度作为变量时，深度误差函数是线性的。并考虑深度对应的不确定，不同深度置信度在总误差的权重不同，优化更为精确。
-
-\section{本章小结}
-
-采取了什么方法，针对出现的问题进行优化，表现出了比现有算法更好的性能。
-
