@@ -141,26 +141,127 @@ p_j &= p_i + \sum\limits_{k=i}^{j-1} \left[ v_k \Delta t + {1 \over 2}g\Delta t^
 b_i^g = b_{i+1}^g = \cdots = b_{j-1}^g, \  b_i^a = b_{i+1}^a = \cdots = b_{j-1}^a
 \end{equation}
 
-方程\ref{equ5.11}将关键帧$i$，$j$之间的相对状态(等号左侧)和IMU传感器的测量值(等号右侧)相关联，因而可以将方程\ref{equ5.11}看做IMU传感器的观测模型。但是，该模型在当前的表示形式下，其观测噪声的不确定性分析较为复杂，无法获取该模型应用于最大后验估计所需要的概率密度函数表达。因而对方程\ref{equ5.11}进行变换，根据李群与李代数之间的映射关系和性质(见附录)，方程\ref{equ5.11}中相对旋转状态可以表示为
+方程\ref{equ5.11}将关键帧$i$，$j$之间的相对状态(等号左侧)和IMU传感器的测量值(等号右侧)相关联，因而可以将方程\ref{equ5.11}看做IMU传感器的观测模型。但是，该模型在当前的表示形式下，其观测噪声的不确定性分析较为复杂，无法获取该模型应用于最大后验估计所需要的概率密度函数表达。因而对方程\ref{equ5.11}进行变换，根据李群与李代数之间的映射关系和性质(见附录)，方程\ref{equ5.11}中IMU旋转观测模型可以表示为
 \begin{equation}
 \label{equ5.13}
 \begin{aligned}
 \Delta R_{ij} & \simeq \prod\limits_{k=i}^{j-1} \left[ \exp \left( \left( \left( \widetilde{\omega}_k - b_i^g \right) \Delta t \right)^{\wedge}  \right)  
 \exp \left( \left( -J_r^k \eta_k^{gd} \Delta t \right)^{\wedge} \right)\right] \\
 &= \Delta \widetilde{R}_{ij} \prod\limits_{k=i}^{j-1}\exp \left( -\Delta \widetilde{R}_{k+1j}^T \left( J_r^k \eta_k^{gd} \Delta t \right)^{\wedge}  \right) \\ 
-&= \Delta \widetilde{R}_{ij} \exp \left( -\delta \phi_{ij} \right)
+& \doteq \Delta \widetilde{R}_{ij} \exp \left(  -\delta \phi_{ij} ^{\wedge}  \right)
 \end{aligned}
 \end{equation}
-其中$J_r^k \doteq J_r^k( \left( \widetilde{\omega}_k - b_i^g \right) \Delta t)$，由方程\ref{equ5.13}定义IMU旋转预积分为$\Delta \widetilde{R}_{ij} = \prod_{k=i}^j\exp \left( \left( \left( \widetilde{\omega}_k - b_i^g \right) \Delta t \right)^{\wedge}  \right)$，观测模型中的旋转观测噪声为$\delta \phi_{ij}$。
+其中$J_r^k \doteq J_r^k( \left( \widetilde{\omega}_k - b_i^g \right) \Delta t)$，由方程\ref{equ5.13}定义IMU旋转预积分为$\Delta \widetilde{R}_{ij} \doteq \prod_{k=i}^j\exp \left( \left( \left( \widetilde{\omega}_k - b_i^g \right) \Delta t \right)^{\wedge}  \right)$，观测模型中的旋转观测噪声为$\delta \phi_{ij}$。
 
+将方程\ref{equ5.13}带入方程\ref{equ5.11}，利用李代数指数映射的一阶近似(见附录)展开$\exp \left(  -\delta \phi_{ij}^{\wedge}  \right)$，忽略高阶噪声项，则方程\ref{equ5.11}中的IMU速度观测模型可以表示为
+\begin{equation}
+\label{equ5.14}
+\begin{aligned}
+\Delta v_{ij} & \simeq \sum\limits_{k=i}^{j-1} \Delta \widetilde{R}_{ik}\left( I-\delta \phi_{ik}^{\wedge} \right) \left( \widetilde{a}_k - b_i^a \right) \Delta t -\Delta \widetilde{R}_{ik} \eta_k^{ad} \Delta t \\ 
+& = \Delta \widetilde{v}_{ij} + \sum\limits_{k=i}^{j-1} \left[ \Delta \widetilde{R}_{ik} \left( \widetilde{a}_k - b_i^a \right)^{\wedge} \delta \phi_{ik} \Delta t - \Delta \widetilde{R}_{ik} \eta_k^{ad} \Delta t \right] \\ 
+& \doteq  \Delta \widetilde{v}_{ij} - \delta v_{ij}
+\end{aligned}
+\end{equation}
+其中定义IMU的速度预积分为$\Delta \widetilde{v}_{ij} \doteq \sum_{k=i}^{j-1} \Delta \widetilde{R}_{ik} \left( \widetilde{a}_k - b_i^a \right) \Delta t $，IMU速度观测模型的观测噪声为$\delta v_{ij}$。
+
+同理，将方程\ref{equ5.13}，\ref{equ5.14}带入方程\ref{equ5.11},利用李代数指数映射的一阶近似，忽略高阶噪声项，则方程\ref{equ5.11}中的IMU位置观测模型可以表示为
+\begin{equation}
+\label{equ5.15}
+\begin{aligned} 
+\Delta p_{ij} & \simeq \sum\limits_{k=i}^{j-1} \left[ (\Delta \widetilde{v}_{ik} - \delta v_{ik}) \Delta t + {1 \over 2} \Delta \widetilde{R}_{ik}\left( I-\delta \phi_{ik}^{\wedge} \right) \left( \widetilde{a}_k - b_i^a  \right) \Delta t^2 - {1 \over 2} \Delta \widetilde{R}_{ik} \eta_k^{ad} \Delta t^2 \right] \\ 
+& =  \Delta \widetilde{p}_{ij} + \sum\limits_{k=i}^{j-1} \left[ -\delta v_{ik} \Delta t + {1 \over 2} \left( \widetilde{a}_k - b_i^a  \right) ^{\wedge} \delta \phi_{ik} \Delta t^2 - {1 \over 2} \Delta \widetilde{R}_{ik} \eta_k^{ad} \Delta t^2 \right] \\ 
+& \doteq \Delta \widetilde{p}_{ij} - \delta p_{ij}
+\end{aligned}
+\end{equation}
+其中，定义IMU位置预积分为$\Delta \widetilde{p}_{ij} \doteq \sum_{k=i}^{j-1} \left( \Delta \widetilde{v}_{ik} \Delta t +  {1 \over 2} \Delta \widetilde{R}_{ik} \left( \widetilde{a}_k - b_i^a  \right) \Delta t^2 \right)$，IMU位置观测模型的观测噪声为$\delta p_{ij}$。
+
+将方程\ref{equ5.13},\ref{equ5.14},\ref{equ5.15}带入方程\ref{equ5.11}中$\Delta R_{ij}$，$\Delta v_{ij}$，$\Delta p_{ij}$的定义式，可以得到IMU预积分的观测模型
+\begin{equation}
+\label{equ5.16}
+\begin{aligned}
+\Delta \widetilde{R}_{ij} &= R_i^T R_j \exp(\delta \phi_{ij}^{\wedge}) \\ 
+\Delta \widetilde{v}_{ij} &= R_i^T \left(v_j-v_i-g\Delta t_{ij} \right)+\delta v_{ij} \\
+\Delta \widetilde{p}_{ij} &= R_i^T \left( p_j-p_i-v_i \Delta t_{ij} -{1 \over 2} g \Delta t_{ij}^2 \right) + \delta p_{ij}
+\end{aligned}
+\end{equation}
+方程\ref{equ5.16}将IMU的测量方程表示为状态变量的函数与观测噪声的和的形式，如果已知IMU观测噪声服从的分布，则可以直接应用在公式\ref{equ5.4}的最大后验概率估计中，将IMU的测量信息加入视觉SLAM图优化框架，优化求解运动状态变量。因此，需要分析IMU观测噪声$[\delta \phi_{ij}^T,\delta v_{ij}^T,\delta p_{ij}^T]^T$服从的分布，首先考虑旋转观测噪声$\delta \phi_{ij}$，有方程\ref{equ5.13}可知
+\begin{equation}
+\label{equ5.17}
+\exp \left( -\delta \phi_{ij} \right) \doteq \prod\limits_{k=i}^{j-1} \exp \left( -\Delta \widetilde{R}_{k+1j}^T \left( J_r^k \eta_k^{gd} \Delta t \right)^{\wedge}  \right)
+\end{equation}
+等号两侧同时去对数，可以得到
+\begin{equation}
+\label{equ5.18}
+\delta \phi_{ij} = -\log \left( \prod\limits_{k=i}^{j-1} \exp \left( -\Delta \widetilde{R}_{k+1j}^T \left( J_r^k \eta_k^{gd} \Delta t \right)^{\wedge}  \right) \right)
+\end{equation}
+在方程\ref{equ5.18}中，由于$\eta_k^{gd}$和$\delta \phi_{ij}$是微小噪声，可以认为雅各比矩阵$J_r^k$近似为单位阵，根据李群与李代数指数映射的性质可以近似为
+\begin{equation}
+\label{equ5.19}
+\delta \phi_{ij} \simeq \sum\limits_{k=i}^{j-1} \Delta \widetilde{R}_{k+1j}^T  J_r^k \eta_k^{gd} \Delta t
+\end{equation}
+由于IMU传感器噪声$\eta_k^{gd}$服从零均值高斯分布，而$\delta \phi_{ij}$是$\eta_k^{gd}$的线性组合，因而$\delta \phi_{ij}$服从零均值高斯分布。对于$\delta v_{ij}$和$\delta p_{ij}$，利用李群与李代数指数映射的性质可以变换为
+\begin{equation}
+\label{equ5.20}
+\begin{aligned}
+\delta v_{ij} &\simeq \sum\limits_{k=i}^{j-1} \left[ - \Delta \widetilde{R}_{ik} \left( \widetilde{a}_k - b_i^a  \right) ^{\wedge} \delta \phi_{ik} \delta t + \Delta \widetilde{R}_{ik} \eta_k^{ad} \Delta t   \right] \\ 
+\delta p_{ij} &\simeq \sum\limits_{k=i}^{j-1} \left[ \delta v_{ik} \Delta t -{1 \over 2} \Delta \widetilde{R}_{ik} \left( \widetilde{a}_k - b_i^a  \right) ^{\wedge} \delta \phi_{ik} \Delta t^2 + { 1 \over 2} \Delta \widetilde{R}_{ik} \eta_k^{ad} \Delta t^2 \right]
+\end{aligned}
+\end{equation}
+方程\ref{equ5.20}表明$\delta v_{ij}$和$\delta p_{ij}$是加速度计噪声$\eta_k^{ad}$和IMU观测模型旋转噪声$\delta \phi_{ij}$的线性组合，所以$\delta v_{ij}$和$\delta p_{ij}$服从零偏高斯分布。IMU观测模型的噪声分布协方差$\Sigma_{ij}$可以根据IMU传感器高斯白噪声$\eta_k^d \doteq [\eta_k^{gd}, \eta_k^{ad}]^T$计算得到。
+\begin{equation}
+\label{equ5.21}
+\eta_{ij}^{\Delta} \doteq \left[ \delta \phi_{ij}^T, \delta v_{ij}^T, \delta p_{ji}^T \right]^T \sim N \left( 0_{9 \times 1}, \Sigma_{ij}  \right)
+\end{equation}
 
 
 \subsection{IMU偏移估计与预积分补偿}
+在之前章节对预积分的推导中，都是假设IMU传感器偏移量${\bar{b}^a, \bar{b}^g}$为常量。然而，在实际情况下IMU传感器的偏移在状态估计与优化过程中是变化的，因而需要估计IMU传感器的偏移$b_i^g$、$b_i^a$，对于IMU传感器的偏移的变化，使用"布朗运动"进行建模，有
+\begin{equation}
+\label{equ5.22}
+\dot{b}^g(t) = \eta^{bg}, \ \ \ \dot{b}^a(t) = \eta^{ba}
+\end{equation}
+对方程\ref{equ5.22}在两连续关键帧$[t_i,t_j]$时间内积分，可以得到
+\begin{equation}
+\label{equ5.23}
+b_j^g = b_i^g+\eta^{bgd}, \ \ \ b_j^a = b_i^a+\eta^{bad}
+\end{equation}
+其中，为了表示方便用符号$b_i^g$表示$b^g(t_i)$。定义离散白噪声$\eta^{bgd}$和$\eta^{bad}$,其服从零偏高斯分布，对应的协方差为$\Sigma^{bgd} \doteq \Delta t_{ij} Cov(\eta^{bg}) $,$\Sigma^{bad} \doteq \Delta t_{ij} Cov(\eta^{ba})$。根据方程\ref{equ5.23}可以构建最大后验概率估计所有关键帧的IMU偏移量，目标优化函数为
+\begin{equation}
+\label{equ5.24}
+\left\Vert r_{b_{ij}} \right\Vert ^2 \doteq \left\Vert b_j^g -b_i^g \right\Vert_{\Sigma^{bgd}}^2 + \left\Vert b_j^a -b_i^a \right\Vert_{\Sigma^{bad}}^2
+\end{equation}
 
+当某时刻IMU传感器偏移$b_g$，$b_a$更新后，原有的IMU预积分值会发生变化。一般的处理方法是使用更新后的IMU传感器偏移重新计算预积分，但是增加算法的计算复杂性。另一种做法是根据偏移的变化$b \leftarrow \bar{b}+\delta b$，使用李群与李代数映射的一阶近似(见附录)更新IMU预积分值
+\begin{equation}
+\label{equ5.25}
+\begin{aligned}
+\Delta \widetilde{R}_{ij}(b_i^g) &\simeq  \Delta \widetilde{R}_{ij}(\bar{b}_i^g) \exp \left( { \partial \Delta \bar{R}_{ij} \over \partial b^g } \delta b^g \right) \\
+\Delta \widetilde{v}_{ij}(b_i^g,b_i^a) &\simeq \Delta \widetilde{v}_{ij}(\bar{b}_i^g,\bar{b}_i^a) + { \partial \Delta \bar{v}_{ij} \over \partial b^g } \delta b_i^g + { \partial \Delta \bar{v}_{ij} \over \partial b^a } \delta b_i^a 				\\
+\Delta \widetilde{p}_{ij}(b_i^g,b_i^a) &\simeq \Delta \widetilde{p}_{ij}(\bar{b}_i^g,\bar{b}_i^a) + { \partial \Delta \bar{p}_{ij} \over \partial b^g } \delta b_i^g + { \partial \Delta \bar{p}_{ij} \over \partial b^a } \delta b_i^a 	
+\end{aligned}
+\end{equation}
+其中，雅各比$\{ { \partial \Delta \bar{R}_{ij} \over \partial b^g },{ \partial \Delta \bar{v}_{ij} \over \partial b^g }, \cdots \} $描述了当IMU偏移量发生变化时，预积分如何变化，雅各比的表达式为
+\begin{equation}
+\label{equ5.26}
+\begin{aligned}
+{\partial \Delta \bar{R}_{ij} \over \partial b^g } &= - \sum\limits_{k=i}^{j-1} \left[  \Delta \widetilde{R}_{k+1j}(\bar{b}_i)^T J_r^k \Delta t \right] \\ 
+{\partial \Delta \bar{v}_{ij} \over \partial b^a } &= -\sum\limits_{k=i}^{j-1} \Delta \widetilde{R}_{ij}(\bar{b}_i) \Delta t	\\
+{\partial \Delta \bar{v}_{ij} \over \partial b^g } &= -\sum\limits_{k=i}^{j-1} \Delta \widetilde{R}_{ij}(\widetilde{a}_k - \bar{b}_i^a)^{\wedge} {\partial \Delta \bar{R}_{ij} \over \partial b^g } \Delta t	\\
+{\partial \Delta \bar{p}_{ij} \over \partial b^a } &= -\sum\limits_{k=i}^{j-1} {3 \over 2} \Delta \widetilde{R}_{ij}(\bar{b}_i) \Delta t^2 \\
+{\partial \Delta \bar{p}_{ij} \over \partial b^g } &= -\sum\limits_{k=i}^{j-1} {3 \over 2} \Delta \widetilde{R}_{ij}(\bar{b}_i) (\widetilde{a}_k - \bar{b}_i^a)^{\wedge} {\partial \Delta \bar{R}_{ij} \over \partial b^g } \Delta t^2
+\end{aligned}
+\end{equation}
 
-
-
-
+根据方程\ref{equ5.16}表示的IMU预积分观测模型和公式\ref{5.21}的观测模型噪声协方差矩阵分析，可以得到方程\ref{equ5.4}的IMU残差项为$r_{\mathcal{I}_{ij}} \doteq \left[ r_{\Delta R_{ij}}^T,r_{\Delta v_{ij}}^T, r_{\Delta p_{ij}}^T \right]^T \in \mathds{R}^9 $，旋转、速度和位置残差分别为：
+\begin{equation}
+\label{equ5.27}
+\begin{aligned}
+r_{\Delta R_{ij}} & \doteq \log \left( \left( \Delta \widetilde{R}_{ij}(\bar{b}_i^g) \exp \left( { \partial \Delta \bar{R}_{ij} \over \partial b^g } \delta b^g \right) \right)^T R_i^T R_j  \right) \\
+r_{\Delta v_{ij}} & \doteq R_i^T \left(v_j-v_i-g\Delta t_{ij} \right) - \left[ \Delta \widetilde{v}_{ij}(\bar{b}_i^g,\bar{b}_i^a) + { \partial \Delta \bar{v}_{ij} \over \partial b^g } \delta b^g + { \partial \Delta \bar{v}_{ij} \over \partial b^a } \delta b^a  \right] \\
+r_{\Delta p_{ij}} & \doteq R_i^T \left( p_j-p_i-v_i \Delta t_{ij} -{1 \over 2} g \Delta t_{ij}^2 \right) \\
+& - \left[ \Delta \widetilde{p}_{ij}(\bar{b}_i^g,\bar{b}_i^a) + { \partial \Delta \bar{p}_{ij} \over \partial b^g } \delta b^g + { \partial \Delta \bar{p}_{ij} \over \partial b^a } \delta b^a  \right]
+\end{aligned}
+\end{equation}
 
 
 %5.3
