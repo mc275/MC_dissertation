@@ -314,15 +314,141 @@ X_i \cr Y_i \cr Z_i \cr 1 \cr
 
 %3.3
 \section{两种SLAM算法比较}
+之前的内容主要针对主流的单目SLAM算法原理进行了分析，本节将在具体数据集上对两个主流的SLAM算法基于直接法的LSD-SLAM和基于特征的ORB-SLAM算法进行实验和比较，对比两种算法的定位精度、鲁棒性和地图重建效果，根据实验结果分析两种SLAM算法的优缺点。结合无人机飞行器的运动特性选择合适的视觉SLAM定位方法，并针对其存在的问题提出改进方案。
 
+\subsubsection*{定位精度}
+TUM RGB-D数据集包含了多种室内场景的图像序列，并且每个序列通过外部视觉捕捉系统提供了准确的真实轨迹，适用于评估视觉SLAM系统的定位精度。对单目SLAM算法进行实验测试时，只使用TUM数据集的RGB图像。对于单目SLAM输出的轨迹结果，通过$\mathfrak{sim}(3)$相似变换进行轨迹对齐，比较关键帧的绝对轨迹误差的均方根误差(RMSE)，误差表示为：
+\begin{equation}
+\label{equ3.23}
+\begin{aligned}
+\boldsymbol{F}_i &\doteq \boldsymbol{Q}_i^{-1} S \boldsymbol{P}_i
+\\ 
+R\!M\!S\!E(\boldsymbol{F}) &\doteq \left( {1 \over n} \sum\limits_{i=1}^n \left \Vert trans(\boldsymbol{F}_i) \right \Vert^2 \right)^{1 \over 2} 
+\end{aligned}
+\end{equation}
+其中$\boldsymbol{Q}_i$表示真值轨迹第$i$时刻的位置，$\boldsymbol{P}_i$表示估计轨迹第$i$时刻的位置，$\boldsymbol{S}$表示用于对齐估计的$\mathfrak{sim}(3)$相似变换，结果如下表\ref{tab3.1}所示
+\begin{table}[h]		%表格环境
+% \multicolumn是跨列功能，第一个参数2，表示跨两列，第二个参数c|，表示文字置中，并在栏位右边画一条直线框，最后一个参数即是要填入的文字
+%\multirow是跨行功能，第一个参数2，表示跨两行，第二个参数*，表示系统自动调整文字，最后一个参数即是要填入的文字
+\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}		%单元格内容强制换行
+\renewcommand\arraystretch{1.5}		%增加行间距
+\centering
+\caption{TUM数据集单目SLAM算法定位精度}   % 表格标题，在表格内容之前
+\label{tab3.1}
+	\begin{tabular*}{0.9\textwidth}{@{\extracolsep{\fill}}ccc}  %生成行和列的表格
+	%\begin{tabular}{p{2cm}p{1.5cm}p{1.5cm}p{1.5cm}}	
+	
+	\toprule
+	
+	\multicolumn{1}{c}{\multirow{2}{*}{Seq.}} &
+	\multicolumn{2} {c} {\bfseries\tabincell{c} {Absolute Key Frame Trajectory RMSE(cm)}} \\
+	\cline{2-3}								%在上一行下面，2-4列画横线
+	\multicolumn{1}{c}{}&
+	\multicolumn{1}{c}{LSD SLAM}	&
+	\multicolumn{1}{c}{ORB SLAM}	\\	
+	
+	\midrule
+	
+	\multicolumn{1}{c}{fr1/xyz}		&
+	\multicolumn{1}{c}{0.90}		&
+	\multicolumn{1}{c}{9.00}		\\
+	
+	\multicolumn{1}{c}{fr2/xyz}		&
+	\multicolumn{1}{c}{0.30}		&
+	\multicolumn{1}{c}{2.15}		\\
+	
+	\multicolumn{1}{c}{fr1/desk}	&
+	\multicolumn{1}{c}{1.69}		&
+	\multicolumn{1}{c}{10.65}		\\
+	
+	\multicolumn{1}{c}{fr2/desk}	&
+	\multicolumn{1}{c}{0.88}		&
+	\multicolumn{1}{c}{4.57}		\\
+	
+	\multicolumn{1}{c}{fr2/desk\_ person}	&
+	\multicolumn{1}{c}{0.63}		&
+	\multicolumn{1}{c}{31.73}		\\
+	
+	\multicolumn{1}{c}{fr3/long\_ office}	&
+	\multicolumn{1}{c}{3.45}		&
+	\multicolumn{1}{c}{38.53}		\\
 
+	\multicolumn{1}{c}{fr3/sit\_ xyz}	&
+	\multicolumn{1}{c}{0.79}		&
+	\multicolumn{1}{c}{7.73}		\\	
+	
+	\multicolumn{1}{c}{fr3/walk\_ halfsph}	&
+	\multicolumn{1}{c}{1.74}		&
+	\multicolumn{1}{c}{$\boldsymbol{X}$}		\\	
+	\bottomrule
+	
+	\end{tabular*}
+\end{table}
+表\ref{tab3.1}是在数据集连续测试五次取均值的结果，符号$\boldsymbol{X}$表示运行过程中出现丢失无法完成整个数据集。通过表\ref{tab3.1}可以看出，ORB-SLAM算法的定位精度高于LSD-SLAM，对于存在运动目标的场景具有较好的定位精度。主要原因可能是：(1)基于直接法的LSD-SLAM算法遵从灰度不变假设，对于相机内参和曝光非常敏感，而且直接法SLAM在相机运动过快时无法准确估计位姿；而基于特征的SLAM算法使用特征提取与匹配的方法关联和解算位姿，对传感器参数变化较为鲁棒，并且在快速运动时不易丢失。(2)基于直接法的SLAM算法计算复杂度较大，无法多次优化关键帧位姿并且将关键帧位姿与地图点的联合BA优化简化为pose图优化，影响了定位精度。另外，由于单目无法提供深度信息，因而估计的轨迹缺少尺度信息。
 
+\subsubsection*{地图重建效果}
+选择TUM数据集中具有代表性的fr2/xyz，fr2/desk，fr3/long\_ office数据集对比重构效果，重构效果如下图所示
+\begin{figure}
+\label{fig3.8}
+\end{figure}
 
+\begin{figure}
+\label{fig3.9}
+\end{figure}
+
+\begin{figure}
+\label{fig3.10}
+\end{figure}
+
+通过对比以上重建结果可以看出，基于直接法的LSD-SLAM算法可以恢复环境的半稠密地图，通过地图可以进行目标识别，导航与任务规划等其他任务；而基于特征的ORB-SLAM算法只能恢复环境稀疏的点云地图，无法提供更多的环境信息。造成这样结果的原因在于，基于特征的SLAM算法只恢复环境的特征点对应的地图点云，考虑特征点的性质：其数量远低于像素数量，因而无法提供丰富的环境场景信息。直接法SLAM关联灰度变化明显区域的像素，而灰度变化明显的像素一般为物体边缘，因而可以恢复出环境的半稠密地图。
 
 %3.4
 \section{本章小结}
+本章介绍了单目视觉SLAM的结构框架、算法原理和分类，从实现原理，定位精度，鲁棒性和地图重建效果4个方面比较了经典的基于直接法的LSD-SLAM算法和基于特征的ORB-SLAM算法。结果表明，相比于基于直接法的LSD-SLAM算法，基于特征的ORB-SLAM算法具有较好的光度不变性和视角不变性，可以在宽基线条件下稳定匹配，对于快速运动鲁棒性好，适宜作为无人机的感知定位系统。但也存在两个问题，首先基于特征的ORB-SLAM算法重建地图为稀疏点云地图，环境信息较少，无法用于无人机的导航、避障与路径规划；另外，由于单目相机无法提供环境尺度，因而估计得到的轨迹尺度不确定。针对ORB-SLAM算法存在的问题，在第四章研究基于特征的SLAM算法的半稠密重建，提供丰富的环境信息；在第五章研究基于IMU-视觉融合的惯性视觉单目SLAM算法，解决单目SLAM算法的尺度问题。通过以上改进，使得本文研究的单目SLAM算法具有准确的尺度，较好的定位精度和丰富的环境信息，为无人机提供准确的位姿估计和环境信息。
 
 
+
+
+\iffalse
+\begin{table}
+\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}		%单元格内容强制换行
+\centering
+\caption{TUM数据集下单目SLAM算法定位精度}	% NOTE!  caption goes _before_ the table contents !!
+\renewcommand\arraystretch{1.5}		%增加行间距
+%\begin{small}							%控制字体大小
+\begin{tabular}{p{2cm}p{1.5cm}p{1.5cm}p{1.5cm}}
+%\hline									%  结束的那一行画一根水平的直线
+\toprule
+% \multicolumn是跨列功能，第一个参数2，表示跨1列，第二个参数c|，表示文字置中，并 在栏位右边画一条直线框，最后一个参数即是要填入的文字
+\multicolumn{1}{c}{\multirow{3}{*}{Seq.}} & 
+\multicolumn{2} {c} {\bfseries\tabincell{c} {Absolute Key Frame Trajectory RMSE(cm)}} \\
+\cline{2-3}								%在上一行下面，2-4列画横线
+\multicolumn{1}{c}{}&   
+\multicolumn{1}{c}{\bfseries \tabincell{c}{LSD-SLAM} } &     
+\multicolumn{1}{c}{\bfseries \tabincell{c}{ semi-dense \\mono-VO}}  \\
+%\multicolumn{1}{c}{\bfseries \tabincell{c}{ RGB-D \\SLAM}} \\	
+%\cline{1-3}
+\midrule
+\multicolumn{1}{c}{fr2/desk}	&
+\multicolumn{1}{c}{5.65}		&
+\multicolumn{1}{c}{13.50}      \\
+%\multicolumn{1}{c}{2.58}   \\
+
+\multicolumn{1}{c}{Fr2/xyz}  &
+\multicolumn{1}{c}{2.15}     &
+\multicolumn{1}{c}{3.79}      \\
+%\multicolumn{1}{c}{1.34}    \\
+
+\multicolumn{1}{c}{sim/slowmo}  &
+\multicolumn{1}{c}{0.37}        &
+\multicolumn{1}{c}{2.21}        \\
+%\multicolumn{1}{c}{0.13}        \\
+%\hline
+\bottomrule
+\end{tabular}
+%\end{small}	
+\end{table}
+\fi
 
 
 
