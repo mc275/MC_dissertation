@@ -30,8 +30,10 @@
 
 %4.1 半稠密ORB SLAM重构流程
 \begin{figure}
+\centering
+%\includegraphics[width=0.75\textwidth]{figures/figure1}
+\caption{基于特征的半稠密单目SLAM算法流程图}
 \label{fig4.1}
-
 \end{figure}
 
 
@@ -52,8 +54,10 @@ x_j^T F_{ji}x_p = x^T_jl_j=0 \rightarrow v_j = m \cdot u_j+n
 \end{equation}
 
 \begin{figure}
+\centering
+%\includegraphics[width=0.75\textwidth]{figures/figure1}
+\caption{极线搜索}
 \label{fig4.2}
-
 \end{figure}
 
 不同于直接法SLAM中的窄极线匹配，本章的改进算法极线搜索是在宽基线条件下进行的，因而除了区块匹配外，需要加入更多约束。除了比较像素灰度$I$之外，还需要比较像素的梯度模$G$和梯度方向$\Uptheta$，从而在极线$l_j$上找到合适的像素匹配。根据以下设计约束, 排除$l_j$极线上不满足条件的像素。
@@ -272,7 +276,7 @@ The picture (a) and (b) are the different distance scene reference image for han
 \centering
 
     \caption{Localization Error in Tum Dataset}     % NOTE!  caption goes _before_ the table contents !!
-    \label{tab:font-sizes}
+    
 	\renewcommand\arraystretch{1.5}
     \begin{small}
     \begin{tabular}{p{2cm}p{1.5cm}p{1.5cm}p{1.5cm}}

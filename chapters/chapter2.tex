@@ -8,85 +8,199 @@
 %% version: 0.2
 %% last update: May 29th, 2017
 %%==================================================
-\chapter{多旋翼飞行器控制系统设计}
+\chapter{多旋翼无人机控制系统设计}
 \label{chap:control design}
-
+本章主要介绍多旋翼无人机数学模型和控制算法设计，研究多旋翼无人机的运动特性，便于之后分析和选择适合多旋翼无人机的视觉定位算法。
 
 %2.1
-\section{多旋翼飞行器运动建模}
-The traditional feature-based approaches, both filtering-based and key frame-based, is to split the overall problem estimating geometric information from images into two sequential steps. Firstly, a series of feature observations is recognized from the image. Then the camera position, posture and scene geometry is computed as a function of these feature observations only. Splitting simplifies the overall problem, it comes with an important limitation. Only information that conforms to the feature type can be used. Kind of method is proposed in [3] such as edge-based or even region-based features.
+\section{多旋翼无人机建模}
+多旋翼无人机模型如图equ{fig2.1}所示，分为四个部分：刚体运动学模型，刚体动力学模型，控制效率模型和动力单元模型。刚体运动学模型与无人机的质量和受力无关，以质点为模型研究无人机位置、速度、姿态、角速度等参量的变化。刚体动力学模型，研究物体所受力和力矩与运动状态变化的关系。多旋翼无人机与一般刚体动力学模型最大的不同在于螺旋桨拉力方向始终与机体坐标系$z_b$轴的负方向一致，以上两个模型又统称为刚体模型。控制效率模型研究不同机型对螺旋桨拉力和力矩的分配情况。动力单元模型则研究多旋翼无人机动力装置电机的数学模型。
+\begin{figure}
+%PPT图6.1
+\centering
+%\includegraphics[width=0.75\textwidth]{figures/figure1}
+\caption{多旋翼无人机模型}
+\label{fig2.1}
+\end{figure}
 
-Direct visual odometry (VO) methods solve this limitation by optimizing the geometry directly on the image intensities，which use all information in the image. While direct image alignment is well-established for RGB-D or stereo sensors [4], only recently monocular direct VO algorithms have been proposed. Accurate and fully dense depth maps are computed using a variational formula which however is computationally demanding and requires a state-of-the-art GPU to run in real-time [5]. By combining direct tracking with key points, it can achieve high framerates even on embedded platform [6].
+\subsection{坐标系定义与坐标变换}
+多旋翼无人机的空间运动主要分为：质心运动和绕质心的运动，因而在描述任意时刻的空间运动时需要6个自由度：3个质心运动和3个角运动。在进行多旋翼无人机建模之前首先应该选择合适的坐标系，可以方便、准确的表示多旋翼无人机的空间状态和受力情况。本文在进行多旋翼无人机建模时主要用到连个坐标系：固联于无人机的机体坐标系和固定于无人机起飞点的地面坐标系，如图\ref{fig2.2}所示。\\
+\begin{figure}
+%书上的Fig4.16加自己画
+\centering
+%\includegraphics[width=0.75\textwidth]{figures/figure1}
+\caption{多旋翼无人机坐标系定义}
+\label{fig2.2}
+\end{figure}
+(1)机体坐标系$\boldsymbol{O} \boldsymbol{x}_b \boldsymbol{y}_b \boldsymbol{z}_b$
 
+机体坐标系原点定义在多旋翼无人机质心上，$\boldsymbol{O} \boldsymbol{x}_b$平行于无人机前后旋翼，指向无人机前进的方向；$\boldsymbol{O} \boldsymbol{z}_b$位于无人机纵向平面，垂直向下；$\boldsymbol{O} \boldsymbol{y}_b$垂直于无人机纵向平面，方向根据右手定则确定。 \\ 
+(2)地面坐标系$\boldsymbol{O} \boldsymbol{x}_e \boldsymbol{y}_e \boldsymbol{z}_e$
+
+地面坐标系远点固定于无人机起飞位置，$\boldsymbol{O} \boldsymbol{x}_e$位于地平面内并指向无人机前进方向；$\boldsymbol{O} \boldsymbol{z}_e$垂直与地面并指向地心；$\boldsymbol{O} \boldsymbol{y}_e$位于地面平内，方向根据右手定则确定。
+
+为了便于描述无人机的空间运动状态，必须选择合适的坐标系，例如选择使用机体坐标系描述空间绕质心的运动，使用地面坐标系描述空间质心运动。当不同坐标系之间需要进行坐标转换，如将机体坐标系受到的螺旋桨拉力转换到地面坐标系分析质心运动。因而，坐标转换是无人机建模不可获取的一部分。一般机体坐标系与地面坐标系之间的转换关系可以由三个姿态角表示，偏航角$\psi$，俯仰角$\theta$和滚转角$\phi$。\\
+俯仰角$\theta$：机体坐标系$\boldsymbol{O} \boldsymbol{x}_b$轴与地平面之间的夹角，沿$\boldsymbol{O} \boldsymbol{y}_b$轴顺时针旋转抬头为正。\\
+滚转角$\phi$：机体坐标系$\boldsymbol{O} \boldsymbol{z}_b$与通过机体坐标系$\boldsymbol{O} \boldsymbol{x}_b$轴的铅垂面之间的夹角，沿$\boldsymbol{O} \boldsymbol{x}_b$轴顺时针旋转向右滚转为正。\\
+偏航角$\psi$：机体坐标系$\boldsymbol{O} \boldsymbol{x}_b$轴在地平面的投影与地面坐标系$\boldsymbol{O} \boldsymbol{x}_e$的夹角，沿$\boldsymbol{O} \boldsymbol{z}_b$轴顺时针旋转右偏为正。
+
+地面坐标系到机体坐标系的转换可以通过欧拉转动定理绕三轴连续转动得到，首先绕地面坐标系$\boldsymbol{O} \boldsymbol{z}_e$转动偏航角$\psi$，得到过度坐标系$\boldsymbol{O} \boldsymbol{x}^{'} \boldsymbol{y}^{'} \boldsymbol{z}^{'}$；之后再由过度坐标系绕$\boldsymbol{O} \boldsymbol{y}^{'}$旋转俯仰角$\theta$，得到过度坐标系$\boldsymbol{O} \boldsymbol{x}^{''} \boldsymbol{y}^{''} \boldsymbol{z}^{''}$；最后由过度坐标系$\boldsymbol{O} \boldsymbol{x}^{''} \boldsymbol{y}^{''} \boldsymbol{z}^{''}$绕$\boldsymbol{O} \boldsymbol{x}^{''}$旋转滚转角$\phi$。则从地面坐标系到机体坐标系的旋转矩阵$\boldsymbol{R}_{BE}$为
+\begin{equation}
+\label{equ2.1}
+\begin{aligned}
+\boldsymbol{R}_{BE} 
+&= \boldsymbol{R}(\boldsymbol{\phi}) \boldsymbol{R}(\boldsymbol{\theta}) \boldsymbol{R}(\boldsymbol{\psi}) \\ 
+&= 
+\begin{bmatrix}
+\cos\theta \cos\psi & \cos\theta \sin\psi & -\sin\theta \cr
+\sin\theta \cos\psi \sin\phi - \sin\psi \cos\phi & \sin\theta \sin\psi \sin\phi + \cos\psi \cos\phi & \cos\theta \sin\phi \cr
+\sin\theta \cos\psi \cos\phi + \sin\psi \sin\phi & \sin\theta \sin\psi \cos\phi - \cos\psi \sin\phi & \cos\theta \cos\phi \cr
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+
+\subsection{多旋翼无人机刚体模型}
+在进行多旋翼无人机刚体建模前，首先对无人机做出如下假设
+\begin{enumerate}[label={(\arabic*)}]
+\item 假设多旋翼无人机是刚体。
+\item 假设多旋翼无人机的质量和转动惯量保持不变。
+\item 假设多旋翼无人机的几何中心和重心重合。
+\item 假设多旋翼无人机只受重力和螺旋桨的拉力。
+\item 假设奇数编号的螺旋桨逆时针转动，偶数编号螺旋桨顺时针转动
+\end{enumerate}
+
+首先进行刚体运动学建模，刚体运动学模型描述了多旋翼无人机运动状态的变化。\\
+(1) 质心运动学模型
+
+研究地面坐标系下无人机的位置$\boldsymbol{P}_e = [X,Y,Z]^T$的变化，分解到三轴坐标上有。
+\begin{equation}
+\label{equ2.2}
+\begin{aligned}
+\boldsymbol{P}_e &= \boldsymbol{V}_e \\
+\begin{bmatrix}
+\dot{X} \cr \dot{Y} \cr \dot{Z} \cr
+\end{bmatrix}
+&=
+\begin{bmatrix}
+V_x \cr V_y \cr V_z \cr
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+(2) 质心转动模型
+
+研究姿态角速率$\dot{\boldsymbol{\Theta}}=[\dot{\theta},\dot{\psi},\dot{\phi}]^T$与机体坐标系下的转动角速率$\boldsymbol{\omega}_b=[\omega_x , \omega_y , \omega_z]^T$的关系。根据地面坐标系与机体坐标系之间的变换关系有$\boldsymbol{\omega}_b = \boldsymbol{R}_{EB} \dot{\boldsymbol{\psi}}+\boldsymbol{R}(\boldsymbol{\phi}) \dot{\boldsymbol{\theta}}+ \dot{\boldsymbol{\phi}} $，带入坐标转换矩阵可以得到。
+\begin{equation}
+\label{equ2.3}
+\begin{aligned}
+\begin{bmatrix}
+\omega_x \cr \omega_y \cr \omega_z \cr
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 & -\sin \theta & 1 \cr
+\cos \phi & \cos \theta \sin \phi & 0 \cr
+-\sin \phi & \cos \theta \cos \phi & 0 \cr
+\end{bmatrix}
+\begin{bmatrix}
+\dot{\theta} \cr \dot{\psi}  \cr  \dot{\phi} \cr
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+(3)质心动力学方程
+
+质心动力学模型研究无人机受力与质心运动的关系。设机体坐标系下所有螺旋桨产生的总拉力$\boldsymbol{T}_b=[0,0,T]^{T}$,无人机受到的重力在世界坐标系下表示为$\boldsymbol{G}_e=[0,0,mg]^T$，则无人机的质心运动方程可以表示为
+\begin{equation}
+\label{equ2.4}
+\begin{aligned}
+m\boldsymbol{V}_e = \boldsymbol{G}_e -  \boldsymbol{R}_{EB} \boldsymbol{T}_b
+\end{aligned}
+\end{equation}
+(4)绕质心转动的动力学模型
+
+绕质心转动的动力学模型研究无人机所受力矩与其空间转动的关系。设无人机在机体坐标系下的转动惯量为
+\begin{equation}
+\label{equ2.5}
+\boldsymbol{I}_b = 
+\begin{bmatrix}
+I_x & 0 & 0 \cr
+0 & I_y & 0 \cr
+0 & 0 & I_z \cr
+\end{bmatrix}
+\end{equation}
+假设无人机受到的总力矩在世界坐标系下为$\boldsymbol{M}_e=[M_x,M_y,M_z]^T$，根据矢量绝对导数与相对导数关系，由角动量定理得
+\begin{equation}
+\label{equ2.6}
+\begin{aligned}
+\boldsymbol{M}_e &= {d\boldsymbol{H}_e \over dt} = {d\boldsymbol{H}_b \over dt} +  \boldsymbol{\omega}_b \times \boldsymbol{H}_b 
+\\
+\boldsymbol{M}_e &= \boldsymbol{I}_b \dot{\boldsymbol{\omega}}_b +\boldsymbol{\omega}_b \times \boldsymbol{I}_b \boldsymbol{\omega}_b 
+\end{aligned}
+\end{equation}
+以上公式\eqref{equ2.2}，\eqref{equ2.3}，\eqref{equ2.4}，\eqref{equ2.6}组成了多旋翼无人机的非线性刚体模型。
+
+\subsection{多旋翼无人机控制效率模型}
+多旋翼无人机控制效率模型研究无人机机型布局与螺旋桨的拉力和力矩分配的关系。以十字型四旋翼无人机为例，已知第$i$个螺旋桨的拉力为$\boldsymbol{F}_i$与电机转速$\omega_i$关系为$\boldsymbol{F}_i = c_T \omega_i^2$，总拉力为
+\begin{equation}
+\label{equ2.7}
+\boldsymbol{T}_b = \sum\limits_{i=1}^4 \boldsymbol{F}_i =  \sum\limits_{i=1}^4 c_T \omega_i^2
+\end{equation}
+四旋翼无人机机臂长$d$，螺旋桨对机体坐标系三轴产生的力矩为，
+\begin{equation}
+\label{equ2.8}
+\begin{aligned}
+M_x &= d c_T \left( \omega_4^2 - \omega_2^2\right)
+\\
+M_y &= d c_T \left( \omega_1^2 - \omega_3^2\right)
+\\
+M_z &= d c_M \left( \omega_1^2 - \omega_2^2 + \omega_3^2 - \omega_4^2\right)
+\end{aligned}
+\end{equation}
+公式\eqref{equ2.7}，\eqref{equ2.8}中$c_T $表示与螺旋桨类型相关的常量,$c_M$表示螺旋桨反扭力常数，将以上两公式进行整理可以得到无人机动力分配模型
+\begin{equation}
+\label{equ2.9}
+\begin{bmatrix}
+T \cr M_x \cr M_y \cr M_z \cr 
+\end{bmatrix}
+=
+\begin{bmatrix}
+c_T & c_T & c_T & c_T  \cr
+0 & -d c_T & 0 & d c_T \cr
+d c_T & 0 & -d c_T & 0 \cr
+c_M & c_M & c_M & c_M  \cr
+\end{bmatrix}
+\begin{bmatrix}
+\omega_1^2 \cr \omega_2^2 \cr \omega_3^2 \cr \omega_4^2 \cr
+\end{bmatrix}
+\end{equation}
+
+
+\subsection{多旋翼无人机动力单元模型}
+多旋翼无人机一般选用直流无刷电机，无刷电机微分方程为
+\begin{equation}
+\label{equ2.10}
+\begin{aligned}
+u &= iR + L {di \over dt} + k_e \omega
+\\
+J_m {d\omega \over dt} &= M_m - M_{load}
+\end{aligned}
+\end{equation}
+其中$u$表示电机电压，$i$为电机电流，$\omega$表示电机旋转角速度，$R$表示电机等效电阻，$L$表示电机线圈电感，$k_e$表示电机反电动势系数，$J_m$表示电机线圈的轴向转动惯量，$M_m=k_m i$表示电机输出力矩，$M_{load}$表示电机负载力矩。由于电机线圈电感较小，省略后可以化简得到多旋翼无人机动力单元模型
+\begin{equation}
+\label{equ2.11}
+\begin{aligned}
+i &= {(u-k_e \omega) \over R }
+\\
+J_m {d \omega \over dt} &= k_m{u \over R } - {k_e k_m \omega \over R} - M_{load}
+\end{aligned}
+\end{equation}
 
 %2.2
-\section{多旋翼飞行器控制算法研究}
-It is a well-know and grown approach to optimize the estimate of the camera posture and position and improve the performance of the global map. This method considers that the world is represented as a number of key frames connected by pose-pose constraints, which can be optimized using a generic graph optimization framework like g2o.
-
+\section{多旋翼无人机控制算法研究}
+为了更好的控制飞行器运动，采用串级PID进行控制，分为四级分别是：位置环，速率环，姿态环和角速率环。
 
 %2.3
 \section{ 数学仿真验证}
-A 3D rigid body transform $G{\rm{ }} \in {\rm{ }}SE(3)$  denotes rotation and translation in 3D,  i.e. is defined by
 
-\begin{equation}
-G=\left(
-    \begin{array}{cc}
-      R & t \\
-      0 & 1 \\
-    \end{array}
-  \right)
-    \ with
-    \ R\in SO(3)
-    \ and
-    \ t\in {\mathbb{R}}^{3}
-\end{equation}
-SE(3) and SO(3) is the concept of elements of Lie-Algebras.
-
-We define the 3D projective warp function $\omega $, which projects an image point ${\bf{p}}$ and its inverse depth ${\bf{d}}$ into a by $\xi $ transformed camera frame.
-
-\begin{equation}
-\begin{split}
-\omega(p,d,\xi):= \left(
-                     \begin{array}{c}
-                       x^{'}/z^{'} \\
-                       y^{'}/z^{'} \\
-                       1/z^{'} \\
-                     \end{array}
-                   \right) \ with \\
-                   \left(
-                     \begin{array}{c}
-                       x^{'} \\
-                       y^{'} \\
-                       z^{'} \\
-                       1 \\
-                     \end{array}
-                   \right):=\!exp_{\!se(\!3\!)}(\xi)
-                   \left(
-                     \begin{array}{c}
-                       p_{x}/d \\
-                       p_{y}/d  \\
-                       1/d  \\
-                       1 \\
-                     \end{array}
-                   \right)
-\end{split}
-\end{equation}
-
-A 3D similarity transform   denotes rotation, scaling and translation, i.e. is defined by
-
-\begin{equation}
-S=\left(
-    \begin{array}{cc}
-      sR & t \\
-      0 & 1 \\
-    \end{array}
-  \right)
-  \ with
-  \ R\in SO(3),t\in {\mathbb{R}}^{3}
-  \ and \ s\in {\mathbb{R}}^{+}
-\end{equation}
-
-As for rigid body transformations, a minimal representation is given by elements of the associated Lie-algebra $\xi  \in sim(3)$, which now have an additional degree of freedom, that is $\xi\in {\mathbb{R}}^{7}$.
 
 
 \section{本章小结}
