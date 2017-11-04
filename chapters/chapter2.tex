@@ -40,9 +40,9 @@
 地面坐标系远点固定于无人机起飞位置，$\boldsymbol{O} \boldsymbol{x}_e$位于地平面内并指向无人机前进方向；$\boldsymbol{O} \boldsymbol{z}_e$垂直与地面并指向地心；$\boldsymbol{O} \boldsymbol{y}_e$位于地面平内，方向根据右手定则确定。
 
 为了便于描述无人机的空间运动状态，必须选择合适的坐标系，例如选择使用机体坐标系描述空间绕质心的运动，使用地面坐标系描述空间质心运动。当不同坐标系之间需要进行坐标转换，如将机体坐标系受到的螺旋桨拉力转换到地面坐标系分析质心运动。因而，坐标转换是无人机建模不可获取的一部分。一般机体坐标系与地面坐标系之间的转换关系可以由三个姿态角表示，偏航角$\psi$，俯仰角$\theta$和滚转角$\phi$。\\
-俯仰角$\theta$：机体坐标系$\boldsymbol{O} \boldsymbol{x}_b$轴与地平面之间的夹角，沿$\boldsymbol{O} \boldsymbol{y}_b$轴顺时针旋转抬头为正。\\
-滚转角$\phi$：机体坐标系$\boldsymbol{O} \boldsymbol{z}_b$与通过机体坐标系$\boldsymbol{O} \boldsymbol{x}_b$轴的铅垂面之间的夹角，沿$\boldsymbol{O} \boldsymbol{x}_b$轴顺时针旋转向右滚转为正。\\
-偏航角$\psi$：机体坐标系$\boldsymbol{O} \boldsymbol{x}_b$轴在地平面的投影与地面坐标系$\boldsymbol{O} \boldsymbol{x}_e$的夹角，沿$\boldsymbol{O} \boldsymbol{z}_b$轴顺时针旋转右偏为正。
+1).俯仰角$\theta$：机体坐标系$\boldsymbol{O} \boldsymbol{x}_b$轴与地平面之间的夹角，沿$\boldsymbol{O} \boldsymbol{y}_b$轴顺时针旋转抬头为正。\\
+2).滚转角$\phi$：机体坐标系$\boldsymbol{O} \boldsymbol{z}_b$与通过机体坐标系$\boldsymbol{O} \boldsymbol{x}_b$轴的铅垂面之间的夹角，沿$\boldsymbol{O} \boldsymbol{x}_b$轴顺时针旋转向右滚转为正。\\
+3).偏航角$\psi$：机体坐标系$\boldsymbol{O} \boldsymbol{x}_b$轴在地平面的投影与地面坐标系$\boldsymbol{O} \boldsymbol{x}_e$的夹角，沿$\boldsymbol{O} \boldsymbol{z}_b$轴顺时针旋转右偏为正。
 
 地面坐标系到机体坐标系的转换可以通过欧拉转动定理绕三轴连续转动得到，首先绕地面坐标系$\boldsymbol{O} \boldsymbol{z}_e$转动偏航角$\psi$，得到过度坐标系$\boldsymbol{O} \boldsymbol{x}^{'} \boldsymbol{y}^{'} \boldsymbol{z}^{'}$；之后再由过度坐标系绕$\boldsymbol{O} \boldsymbol{y}^{'}$旋转俯仰角$\theta$，得到过度坐标系$\boldsymbol{O} \boldsymbol{x}^{''} \boldsymbol{y}^{''} \boldsymbol{z}^{''}$；最后由过度坐标系$\boldsymbol{O} \boldsymbol{x}^{''} \boldsymbol{y}^{''} \boldsymbol{z}^{''}$绕$\boldsymbol{O} \boldsymbol{x}^{''}$旋转滚转角$\phi$。则从地面坐标系到机体坐标系的旋转矩阵$\boldsymbol{R}_{BE}$为
 \begin{equation}
@@ -76,7 +76,7 @@
 \begin{equation}
 \label{equ2.2}
 \begin{aligned}
-\boldsymbol{P}_e &= \boldsymbol{V}_e \\
+\dot{\boldsymbol{P}}_e &= \boldsymbol{V}_e \\
 \begin{bmatrix}
 \dot{X} \cr \dot{Y} \cr \dot{Z} \cr
 \end{bmatrix}
@@ -88,14 +88,16 @@ V_x \cr V_y \cr V_z \cr
 \end{equation}
 (2) 质心转动模型
 
-研究姿态角速率$\dot{\boldsymbol{\Theta}}=[\dot{\theta},\dot{\psi},\dot{\phi}]^T$与机体坐标系下的转动角速率$\boldsymbol{\omega}_b=[\omega_x , \omega_y , \omega_z]^T$的关系。根据地面坐标系与机体坐标系之间的变换关系有$\boldsymbol{\omega}_b = \boldsymbol{R}_{EB} \dot{\boldsymbol{\psi}}+\boldsymbol{R}(\boldsymbol{\phi}) \dot{\boldsymbol{\theta}}+ \dot{\boldsymbol{\phi}} $，带入坐标转换矩阵可以得到。
+研究姿态角速率$\dot{\boldsymbol{\Theta}}=[\dot{\theta},\dot{\psi},\dot{\phi}]^T$与机体坐标系下的转动角速率$\boldsymbol{\omega}_b=[\omega_x , \omega_y , \omega_z]^T$的关系。根据地面坐标系与机体坐标系之间的变换关系有。
 \begin{equation}
 \label{equ2.3}
 \begin{aligned}
+\boldsymbol{\omega}_b & = \boldsymbol{R}_{EB} \dot{\boldsymbol{\psi}}+\boldsymbol{R}(\boldsymbol{\phi}) \dot{\boldsymbol{\theta}}+ \dot{\boldsymbol{\phi}} 
+\\
 \begin{bmatrix}
 \omega_x \cr \omega_y \cr \omega_z \cr
 \end{bmatrix}
-=
+& =
 \begin{bmatrix}
 0 & -\sin \theta & 1 \cr
 \cos \phi & \cos \theta \sin \phi & 0 \cr
@@ -106,16 +108,16 @@ V_x \cr V_y \cr V_z \cr
 \end{bmatrix}
 \end{aligned}
 \end{equation}
-(3)质心动力学方程
+(3)质心动力学模型
 
 质心动力学模型研究无人机受力与质心运动的关系。设机体坐标系下所有螺旋桨产生的总拉力$\boldsymbol{T}_b=[0,0,T]^{T}$,无人机受到的重力在世界坐标系下表示为$\boldsymbol{G}_e=[0,0,mg]^T$，则无人机的质心运动方程可以表示为
 \begin{equation}
 \label{equ2.4}
 \begin{aligned}
-m\boldsymbol{V}_e = \boldsymbol{G}_e -  \boldsymbol{R}_{EB} \boldsymbol{T}_b
+m\boldsymbol{V}_e &= \boldsymbol{G}_e -  \boldsymbol{R}_{EB} \boldsymbol{T}_b
 \end{aligned}
 \end{equation}
-(4)绕质心转动的动力学模型
+(4)绕质心转动动力学模型
 
 绕质心转动的动力学模型研究无人机所受力矩与其空间转动的关系。设无人机在机体坐标系下的转动惯量为
 \begin{equation}
@@ -196,7 +198,59 @@ J_m {d \omega \over dt} &= k_m{u \over R } - {k_e k_m \omega \over R} - M_{load}
 
 %2.2
 \section{多旋翼无人机控制算法研究}
-为了更好的控制飞行器运动，采用串级PID进行控制，分为四级分别是：位置环，速率环，姿态环和角速率环。
+为了更好的控制飞行器运动，采用串级PID进行控制策略，分为两个控制器位置控制器和姿态控制器。位置控制器为外环，负责控制多旋翼无人机的位置；姿态控制器为内环，负责控制多旋翼无人机的姿态角。由内外环控制实现多旋翼飞行器的升降、悬停和侧飞等飞行模态，控制系统结构狂徒如图\ref{fig2.3}所示。
+\begin{figure}
+%PPT图11.2
+\centering
+%\includegraphics[width=0.75\textwidth]{figures/figure1}
+\caption{多旋翼无人机闭环控制框图}
+\label{fig2.3}
+\end{figure}
+
+\subsection{姿态控制器}
+多旋翼无人机的姿态角直接影响无人机的飞行状态，对于内环姿态控制器，根据方程\eqref{equ2.5}可知多旋翼飞行器绕质心转动的动力学模型为二阶系统，因而在姿态控制回路引入比例-微分控制器进行调节，并将控制通道解耦为俯仰/滚转通道和偏航通道。对于俯仰/滚转通道，多旋翼无人机的俯仰、滚转运动对称，因而以俯仰通道为例介绍，设计比例-微分控制器
+\begin{equation}
+\label{equ2.12}
+\begin{aligned}
+M_x &= K_{p\theta} \left( \theta^* - \theta \right) + K_{d\theta} \left( \dot{\theta}^* -  \dot{\theta} \right)
+\end{aligned}
+\end{equation}
+其中$\theta^*$、$\dot{\theta}$表示反馈的姿态角和姿态角速率，$\theta^*$表示期望俯仰角，由位置控制器给出。$ \dot{\theta}^*$通常较小可以忽略。
+
+对于偏航通道，同样采用比例-微分控制器
+\begin{equation}
+\label{equ2.13}
+M_z = K_{p\psi} \left( \psi^* - \psi \right) + K_{d\psi} \left( \dot{\psi}^* -  \dot{\psi} \right)
+\end{equation}
+其中$\psi$、$\dot{\psi}$表示反馈的姿态角和姿态角速率。不同于俯仰/滚转通道，$\psi^*$表示的期望俯仰角不由位置控制器给出，而是根据规划的轨迹或外部遥控装置直接给出。$ \dot{\psi}^*$通常较小可以忽略。
+
+\subsection{位置控制器}
+对多旋翼无人机刚体运动学模型\eqref{equ2.3}，\eqref{equ2.4}进行线性化近似可知，多旋翼无人机的水平运动影响俯仰/滚转姿态角变化，高度运动影响无人机推力变化。对于水平运动，$x$,$y$方向的运动是等价的，以x方向运动为例，设计比例控制器约束无人机的期望速度
+\begin{equation}
+\label{equ2.14}
+v_x^* =  K_{px} \left( p_x^* - p_x \right)
+\end{equation}
+其中$p_x $表示反馈的$x$方向位置，$p_x^*$表示$x$方向的期望位置，$v_x^*$表示$x$方向的期望速度。根据\eqref{equ2.3}的现行近似模型可知，为了使机体产生沿$x$方向的运动，需要产生俯仰角，有
+\begin{equation}
+\label{equ2.15}
+f_x = T \sin\theta \simeq T \theta
+\end{equation}
+根据方程\eqref{equ2.15}设计比例控制器
+\begin{equation}
+f_x = K_{vx} \left(  v_x^* - v_x \right)
+\end{equation}
+联立方程\eqref{equ2.14},\eqref{equ2.15}可以得到期望的俯仰姿态角$\theta^*$
+\begin{equation}
+\label{equ2.16}
+\theta^* = K_{vx} \left( K_{px} \left( p_x^* - p_x \right) - v_x \right)
+\end{equation}
+
+对于高度控制器，设计比例-微分控制器调节多旋翼无人机的推力
+\begin{equation}
+\label{equ2.17}
+T = K_{pz} \left( z^* -z  \right) + K_{dz} \left( \dot{z}^* - \dot{z}  \right) + G_0
+\end{equation}
+其中，$z^*$表示目标高度，$z$，$\dot{z}$表示无人机反馈的高度位置和速度。$G_0$是前馈控制量，抵消重力的影响，避免高度控制中的定常干扰。
 
 %2.3
 \section{ 数学仿真验证}
