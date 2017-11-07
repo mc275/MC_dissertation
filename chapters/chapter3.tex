@@ -21,17 +21,18 @@ SLAM算法实际是状态估计问题，将传感器数据抽象为适于估计�
 %图3.1 高翔论文图1.3
 \begin{figure}[h]
 \centering
-%\includegraphics[width=0.75\textwidth]{figures/figure1}
+\includegraphics[scale=0.3]{figures/Fig3.1.png}
 \caption{视觉SLAM算法框架}
 \label{fig3.1}
 \end{figure}
+
 %3.1.1
 \subsection{视觉里程计}
 SLAM是一个状态估计问题，然而实际的传感器输出大都很难直接作为状态估计模型的输入。因而视觉里程计的主要任务是根据传感器输入，估计图像$I_i \rightarrow I_j$的相对位姿$T_ij$，串联相对位姿并三角化观测到的地图点得到运动轨迹与局部地图，将图像数据抽象为适于估计的数学模型。视觉里程计一般只估计相邻时刻的运动，和再过往的状态没有关联。视觉里程计主要包括两个部分，传感器数据关联和运动估计，其算法流程如图\ref{fig3.2}所示。根据视觉里程计传感器关联数据方式的不同，当前主流SLAM算法分为基于直接法和基于特征的SLAM算法，具体原理将在3.2节中详细介绍。
 %图3.2 vo综述中的vo流程。
 \begin{figure}[h]
 \centering
-%\includegraphics[width=0.75\textwidth]{figures/figure1}
+\includegraphics[scale=0.5]{figures/Fig3.2.png}
 \caption{视觉里程计算法流程图}
 \label{fig3.2}
 \end{figure}
@@ -69,11 +70,10 @@ SLAM算法的后端优化将SLAM问题看作最大后验概率估计问题，且
 % 综述因子图
 \begin{figure}
 \centering
-%\includegraphics[width=0.75\textwidth]{figures/figure1}
-\caption{SLAM算法因子图}
+\includegraphics[scale=0.5]{figures/Fig3.3.png}
+\caption{SLAM因子图}
 \label{fig3.3}
 \end{figure}
-
 
 
 为了更清楚的表示公式\eqref{equ3.2}，假设观测模型的测量噪声$\epsilon_k$服从信息矩阵为$\Omega_k$的0均值高斯分布。测量值的似然可以表示为
@@ -141,8 +141,8 @@ LSD-SLAM是2014年慕尼黑工业大学的J.Engle等人提出的基于直接法�
 %LSD算法流程图
 \begin{figure}
 \centering
-%\includegraphics[width=0.75\textwidth]{figures/figure1}
-\caption{LSD-SLAM算法流程图}
+\includegraphics[scale=0.35]{figures/Fig3.4.png}
+\caption{LSD-SLAM算法流程图\upcite{}}
 \label{fig3.4}
 \end{figure}
 
@@ -168,9 +168,8 @@ u_2 \cr v_2 \cr 1 \cr
 \end{equation}
 其中$Z_1$，$Z_2$是空间点P在两个相机坐标系下的深度，$(\cdot)^{\wedge}$表示向量的反对称矩阵。由于位姿$\exp(\boldsymbol{\xi}^{\wedge})$应该与齐次坐标相乘，得到的结果只取前三个元素。
 \begin{figure}
-% 直接法示意图8-3
 \centering
-%\includegraphics[width=0.75\textwidth]{figures/figure1}
+\includegraphics[scale=0.5]{figures/Fig3.5.png}
 \caption{直接法示意图}
 \label{fig3.5}
 \end{figure}
@@ -241,9 +240,9 @@ ${\partial \boldsymbol{q} \over \partial \delta \boldsymbol{\xi}}$表示相机2�
 \subsubsection*{算法概述}
 ORB-SLAM算法是Ra\'u l等人于2015年提出的基于特征的单目SLAM算法，是当前SLAM系统中最为完整和易用的SLAM系统。通过多线程实现整个算法实时运行，可应用与不同尺度大小的室内和室外场景，并且对于剧烈运动有较好的鲁棒性。整个系统围绕ORB特征进行计算，包括视觉里程计和回环检测中的ORB字典。并围绕特征点进行优化，如在OpenCV特征提取基础上保证特征点均匀分布，宽松的关键帧建立机制和严苛的关键帧筛选机制，循环优化4遍相机位姿以得到更多的匹配。以上改进和优化使得ORB-SLAM具有很好的鲁棒性，代表了当前基于特征的SLAM算法的最高水平，ORB-SLAM算法结构如图\ref{fig3.6}所示。
 %ORB算法结构图
-\begin{figure}
+\begin{figure}[h]
 \centering
-%\includegraphics[width=0.75\textwidth]{figures/figure1}
+\includegraphics[scale=0.5]{figures/Fig3.6.png}
 \caption{ORB-SLAM算法流程图}
 \label{fig3.6}
 \end{figure}
@@ -268,10 +267,10 @@ ORB特征由关键点和描述子两部分组成。其关键点成为"Oriented F
 在完成图像特征提取后，需要对图像间的相同特征进行匹配。特征匹配是SLAM算法中重要的一部，解决SLAM算法的数据关联，确定了当前图像特征与之前图像特征的对应关系。考虑两个时刻的图像，如果图像$I_t$中提取的特征点$x_t^m,m=1,2,\cdots,M$，在图像$I_{t+1}$中提取到特征点$x_{t+1}^n,n=1,2,\cdots,N$，最简单的方法是进行暴力匹配，对每个特征点$x_t^m$与所有的特征点$x_{t+1}^n$测量描述子之间的距离，取最接近的作为匹配点。描述子距离表示描述子的相似程度，对于浮点类型的描述子可以使用欧氏距离，对于BRIEF这样的二进制描述子，一般使用汉明距——比较描述子不同位的个数。暴力匹配是最直接的方法，单当特征点数量较多，尤其与地图进行匹配时，暴力匹配将消耗很大的计算量，无法满足SLAM算法实时性要求。ORB-SLAM引入恒速模型匹配，假设当前帧的运动与上一帧相同从而得到初始位姿，之后利用出事位姿将上一帧或地图点投影到当前帧就近匹配，极大的提高了匹配速度。
 
 当完成特征点匹配后，需要根据特征匹配关系估计相机运动。首先在初始化阶段，由于单目只知道2D像素坐标信息，需要根据对极几何解决初始位姿估计，对极几何描述了匹配特征点之间的几何关系，如图\ref{fig3.7}所示。
-\begin{figure}
+\begin{figure}[h]
 % ch7 图7-7
 \centering
-%\includegraphics[width=0.75\textwidth]{figures/figure1}
+\includegraphics[scale=0.5]{figures/Fig3.7.png}
 \caption{对极几何约束}
 \label{fig3.7}
 \end{figure}
@@ -408,7 +407,14 @@ R\!M\!S\!E(\boldsymbol{F}) &\doteq \left( {1 \over n} \sum\limits_{i=1}^n \left 
 选择TUM数据集中具有代表性的fr2/xyz，fr2/desk，fr3/long\_ office数据集对比重构效果，重构效果如下图所示
 \begin{figure}
 \centering
-%\includegraphics[width=0.75\textwidth]{figures/figure1}
+	\subfigure[LSD-SLAM]
+    {
+		\includegraphics[scale=.15]{figures/Fig3.8_a.png}
+	}
+	\subfigure[ORB-SLAM]
+    {	
+		\includegraphics[scale=.3]{figures/Fig3.8_b.png}
+	}
 \caption{fr2/xyz场景}
 \label{fig3.8}
 \end{figure}

@@ -14,30 +14,31 @@
 
 %2.1
 \section{多旋翼无人机建模}
-多旋翼无人机模型如图equ{fig2.1}所示，分为四个部分：刚体运动学模型，刚体动力学模型，控制效率模型和动力单元模型。刚体运动学模型与无人机的质量和受力无关，以质点为模型研究无人机位置、速度、姿态、角速度等参量的变化。刚体动力学模型，研究物体所受力和力矩与运动状态变化的关系。多旋翼无人机与一般刚体动力学模型最大的不同在于螺旋桨拉力方向始终与机体坐标系$z_b$轴的负方向一致，以上两个模型又统称为刚体模型。控制效率模型研究不同机型对螺旋桨拉力和力矩的分配情况。动力单元模型则研究多旋翼无人机动力装置电机的数学模型。
-\begin{figure}
+多旋翼无人机模型如图\ref{fig2.1}所示，分为四个部分：刚体运动学模型，刚体动力学模型，控制效率模型和动力单元模型。刚体运动学模型与无人机的质量和受力无关，以质点为模型研究无人机位置、速度、姿态、角速度等参量的变化。刚体动力学模型，研究物体所受力和力矩与运动状态变化的关系。多旋翼无人机与一般刚体动力学模型最大的不同在于螺旋桨拉力方向始终与机体坐标系$z_b$轴的负方向一致，以上两个模型又统称为刚体模型。控制效率模型研究不同机型对螺旋桨拉力和力矩的分配情况。动力单元模型则研究多旋翼无人机动力装置电机的数学模型。
+\begin{figure}[h]
 %PPT图6.1
 \centering
-%\includegraphics[width=0.75\textwidth]{figures/figure1}
+\includegraphics[scale=0.4]{figures/Fig2.1.png}
 \caption{多旋翼无人机模型}
 \label{fig2.1}
 \end{figure}
 
 \subsection{坐标系定义与坐标变换}
 多旋翼无人机的空间运动主要分为：质心运动和绕质心的运动，因而在描述任意时刻的空间运动时需要6个自由度：3个质心运动和3个角运动。在进行多旋翼无人机建模之前首先应该选择合适的坐标系，可以方便、准确的表示多旋翼无人机的空间状态和受力情况。本文在进行多旋翼无人机建模时主要用到连个坐标系：固联于无人机的机体坐标系和固定于无人机起飞点的地面坐标系，如图\ref{fig2.2}所示。\\
-\begin{figure}
-%书上的Fig4.16加自己画
-\centering
-%\includegraphics[width=0.75\textwidth]{figures/figure1}
-\caption{多旋翼无人机坐标系定义}
-\label{fig2.2}
-\end{figure}
 (1)机体坐标系$\boldsymbol{O} \boldsymbol{x}_b \boldsymbol{y}_b \boldsymbol{z}_b$
 
 机体坐标系原点定义在多旋翼无人机质心上，$\boldsymbol{O} \boldsymbol{x}_b$平行于无人机前后旋翼，指向无人机前进的方向；$\boldsymbol{O} \boldsymbol{z}_b$位于无人机纵向平面，垂直向下；$\boldsymbol{O} \boldsymbol{y}_b$垂直于无人机纵向平面，方向根据右手定则确定。 \\ 
 (2)地面坐标系$\boldsymbol{O} \boldsymbol{x}_e \boldsymbol{y}_e \boldsymbol{z}_e$
 
 地面坐标系远点固定于无人机起飞位置，$\boldsymbol{O} \boldsymbol{x}_e$位于地平面内并指向无人机前进方向；$\boldsymbol{O} \boldsymbol{z}_e$垂直与地面并指向地心；$\boldsymbol{O} \boldsymbol{y}_e$位于地面平内，方向根据右手定则确定。
+
+\begin{figure}[h]
+%书上的Fig4.16加自己画
+\centering
+\includegraphics[scale=0.5]{figures/Fig2.2.png}
+\caption{多旋翼无人机坐标系定义}
+\label{fig2.2}
+\end{figure}
 
 为了便于描述无人机的空间运动状态，必须选择合适的坐标系，例如选择使用机体坐标系描述空间绕质心的运动，使用地面坐标系描述空间质心运动。当不同坐标系之间需要进行坐标转换，如将机体坐标系受到的螺旋桨拉力转换到地面坐标系分析质心运动。因而，坐标转换是无人机建模不可获取的一部分。一般机体坐标系与地面坐标系之间的转换关系可以由三个姿态角表示，偏航角$\psi$，俯仰角$\theta$和滚转角$\phi$。\\
 1).俯仰角$\theta$：机体坐标系$\boldsymbol{O} \boldsymbol{x}_b$轴与地平面之间的夹角，沿$\boldsymbol{O} \boldsymbol{y}_b$轴顺时针旋转抬头为正。\\
@@ -61,14 +62,13 @@
 
 \subsection{多旋翼无人机刚体模型}
 在进行多旋翼无人机刚体建模前，首先对无人机做出如下假设
-\begin{enumerate}[label={(\arabic*)}]
+\begin{enumerate}  [itemindent=1em,label={(\arabic*)}]
 \item 假设多旋翼无人机是刚体。
 \item 假设多旋翼无人机的质量和转动惯量保持不变。
 \item 假设多旋翼无人机的几何中心和重心重合。
 \item 假设多旋翼无人机只受重力和螺旋桨的拉力。
 \item 假设奇数编号的螺旋桨逆时针转动，偶数编号螺旋桨顺时针转动
 \end{enumerate}
-
 首先进行刚体运动学建模，刚体运动学模型描述了多旋翼无人机运动状态的变化。\\
 (1) 质心运动学模型
 
@@ -199,10 +199,10 @@ J_m {d \omega \over dt} &= k_m{u \over R } - {k_e k_m \omega \over R} - M_{load}
 %2.2
 \section{多旋翼无人机控制算法研究}
 为了更好的控制飞行器运动，采用串级PID进行控制策略，分为两个控制器位置控制器和姿态控制器。位置控制器为外环，负责控制多旋翼无人机的位置；姿态控制器为内环，负责控制多旋翼无人机的姿态角。由内外环控制实现多旋翼飞行器的升降、悬停和侧飞等飞行模态，控制系统结构狂徒如图\ref{fig2.3}所示。
-\begin{figure}
+\begin{figure}[h]
 %PPT图11.2
 \centering
-%\includegraphics[width=0.75\textwidth]{figures/figure1}
+\includegraphics[scale=0.3]{figures/Fig2.3.png}
 \caption{多旋翼无人机闭环控制框图}
 \label{fig2.3}
 \end{figure}
