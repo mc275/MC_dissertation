@@ -48,14 +48,15 @@
 %4.2
 \section{极线搜索与块匹配}
 对于当前关键帧$K_i$中像素梯度的模大于$\lambda_G$的像素$p$，会在关键帧$K_j \in K$的极线$l_j$上$\left[ \rho_{min}, \rho_{max} \right]$范围内进行搜索，寻找匹配的像素点，如图\ref{fig4.2}所示。极线利用基本矩阵$F_{ji}$求得，极线搜索方程如下所示。
+
 \begin{equation}
 \label{equ4.1}
-x_j^T F_{ji}x_p = x^T_jl_j=0 \rightarrow v_j = m \cdot u_j+n
+x_j^T F_{ji}x_p = x^T_jl_j=0 \  \rightarrow \  v_j = m \cdot u_j+n
 \end{equation}
 
-\begin{figure}
+\begin{figure}[h]
 \centering
-%\includegraphics[width=0.75\textwidth]{figures/figure1}
+\includegraphics[scale=0.3]{figures/Fig4.2.png}
 \caption{极线搜索}
 \label{fig4.2}
 \end{figure}
