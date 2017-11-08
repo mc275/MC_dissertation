@@ -29,9 +29,10 @@
 本文改进的基于特征的单目SLAM算法是在宽基线条件下进行的关键帧间极线搜索，宽基线的极线搜索容易导致误匹配和离群值影响重构效果。因而相比于基于直接法的半稠密SLAM算法，为了提高本算法的鲁棒性，进行极线搜索时除考虑灰度梯度大小和方向的匹配性外，还应进行逆深度假设融合和帧内与帧间逆深度假设一致性检验，剔除宽基线极线搜索的误匹配点，从而提升重构效果。
 
 %4.1 半稠密ORB SLAM重构流程
-\begin{figure}
+\begin{figure}[h]
 \centering
 %\includegraphics[width=0.75\textwidth]{figures/figure1}
+\includegraphics[scale=0.4,angle=-90]{figures/Fig4-1.pdf}
 \caption{基于特征的半稠密单目SLAM算法流程图}
 \label{fig4.1}
 \end{figure}
@@ -47,16 +48,17 @@
 
 %4.2
 \section{极线搜索与块匹配}
-对于当前关键帧$K_i$中像素梯度的模大于$\lambda_G$的像素$p$，会在关键帧$K_j \in K$的极线$l_j$上$\left[ \rho_{min}, \rho_{max} \right]$范围内进行搜索，寻找匹配的像素点，如图\ref{fig4.2}所示。极线利用基本矩阵$F_{ji}$求得，极线搜索方程如下所示。
+对于当前关键帧$K_i$中像素梯度的模大于$\lambda_G$的像素$p$，会在关键帧$K_j \in K$的极线$l_j$上$\left[ \rho_{min}, \rho_{max} \right]$范围内进行搜索，寻找匹配的像素点，如图\ref{fig4.2}所示。极线利用基本矩阵$F_{ji}$求得，极线搜索方程为
 
 \begin{equation}
 \label{equ4.1}
 x_j^T F_{ji}x_p = x^T_jl_j=0 \  \rightarrow \  v_j = m \cdot u_j+n
 \end{equation}
 
-\begin{figure}[h]
+\begin{figure}
 \centering
-\includegraphics[scale=0.3]{figures/Fig4.2.png}
+%\includegraphics[scale=0.3]{figures/Fig4.2.png}
+\includegraphics[scale=0.25,angle=-90]{figures/Fig4-2.pdf}
 \caption{极线搜索}
 \label{fig4.2}
 \end{figure}

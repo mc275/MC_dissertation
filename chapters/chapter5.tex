@@ -20,7 +20,8 @@ IMU与视觉数据融合分为松耦合和紧耦合两种方法。松耦合分�
 惯性视觉单目SLAM算法主要是通过捷联的IMU与视觉传感器，估计系统的位姿、速度与环境地图点的位置。假设IMU坐标系用$B$表示，相机坐标系用$C$表示，通过预先标定得到相机坐标系到IMU坐标系的坐标变换$\boldsymbol{T}_{BC}$，如图\ref{fig5.1}所示。
 \begin{figure}
 \centering
-\includegraphics[scale=0.5]{figures/Fig5.1.png}
+%\includegraphics[scale=0.4]{figures/Fig5.1.png}
+\includegraphics[scale=0.35,angle=-90]{figures/Fig5-1.pdf}
 \caption{IMU-相机坐标系变换}
 \label{fig5.1}
 \end{figure}
@@ -115,7 +116,8 @@ p(\mathcal{X}_k | Z_k) & \varpropto p(\mathcal{X}_0)p(Z_k | \mathcal{X}_k) = p(\
 方程\eqref{equ5.9}可以作为\eqref{equ5.4}最大后验图优化框架的约束，但其中包含需要频繁更新的状态变量。此外，方程\eqref{equ5.9}中涉及到时间$t$和$t+\Delta t$的状态，因此在每次得到新的IMU测量时需要增加状态变量。针对以上问题，采用IMU预积分算法，将连续两帧关键帧之间的IMU观测数据整合为一个包含运动状态的测量信息，如图\ref{fig5.2}所示。
 \begin{figure}
 \centering
-\includegraphics[scale=0.4]{figures/Fig5.2.png}
+%\includegraphics[scale=0.4]{figures/Fig5.2.png}
+\includegraphics[scale=0.6,angle=-90]{figures/Fig5-2.pdf}
 \caption{IMU预积分示意图}
 \label{fig5.2}
 \end{figure}
