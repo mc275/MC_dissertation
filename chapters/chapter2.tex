@@ -16,7 +16,6 @@
 \section{多旋翼无人机建模}
 多旋翼无人机模型如图\ref{fig2.1}所示，分为四个部分：刚体运动学模型，刚体动力学模型，控制效率模型和动力单元模型。刚体运动学模型与无人机的质量和受力无关，以质点为模型研究无人机位置、速度、姿态、角速度等参量的变化。刚体动力学模型，研究物体所受力和力矩与运动状态变化的关系。多旋翼无人机与一般刚体动力学模型最大的不同在于螺旋桨拉力方向始终与机体坐标系$z_b$轴的负方向一致，以上两个模型又统称为刚体模型。控制效率模型研究不同机型对螺旋桨拉力和力矩的分配情况。动力单元模型则研究多旋翼无人机动力装置电机的数学模型。
 \begin{figure}[h]
-%PPT图6.1
 \centering
 %\includegraphics[scale=0.4]{figures/Fig2.1.png}
 \includegraphics[scale=0.8,,angle=-90]{figures/Fig2-1.pdf}
@@ -34,7 +33,6 @@
 地面坐标系远点固定于无人机起飞位置，$\boldsymbol{O} \boldsymbol{x}_e$位于地平面内并指向无人机前进方向；$\boldsymbol{O} \boldsymbol{z}_e$垂直与地面并指向地心；$\boldsymbol{O} \boldsymbol{y}_e$位于地面平内，方向根据右手定则确定。
 
 \begin{figure}[h]
-%书上的Fig4.16加自己画
 \centering
 %\includegraphics[scale=0.5]{figures/Fig2.2.png}
 \includegraphics[scale=0.7,angle=-90]{figures/Fig2-2.pdf}
@@ -202,7 +200,6 @@ J_m {d \omega \over dt} &= k_m{u \over R } - {k_e k_m \omega \over R} - M_{load}
 \section{多旋翼无人机控制算法研究}
 为了更好的控制飞行器运动，采用串级PID进行控制策略，分为两个控制器位置控制器和姿态控制器。位置控制器为外环，负责控制多旋翼无人机的位置；姿态控制器为内环，负责控制多旋翼无人机的姿态角。由内外环控制实现多旋翼飞行器的升降、悬停和侧飞等飞行模态，控制系统结构狂徒如图\ref{fig2.3}所示。
 \begin{figure}[h]
-%PPT图11.2
 \centering
 %\includegraphics[scale=0.3]{figures/Fig2.3.png}
 \includegraphics[scale=0.5,angle=-90]{figures/Fig2-3.pdf}

@@ -28,7 +28,6 @@
 
 本文改进的基于特征的单目SLAM算法是在宽基线条件下进行的关键帧间极线搜索，宽基线的极线搜索容易导致误匹配和离群值影响重构效果。因而相比于基于直接法的半稠密SLAM算法，为了提高本算法的鲁棒性，进行极线搜索时除考虑灰度梯度大小和方向的匹配性外，还应进行逆深度假设融合和帧内与帧间逆深度假设一致性检验，剔除宽基线极线搜索的误匹配点，从而提升重构效果。
 
-%4.1 半稠密ORB SLAM重构流程
 \begin{figure}[h]
 \centering
 %\includegraphics[width=0.75\textwidth]{figures/figure1}
@@ -185,12 +184,149 @@ d_p^* = \min_{d_p} \sum\limits_{j,n} \left( d_{j,n} - d_p r_z^{ji} X_p - t_z^{ji
 优化的目标函数选择深度作为优化变量而不是逆深度，是因为从方程\eqref{equ4.13}中可以发现，以深度作为变量时，深度误差函数是线性的。并考虑深度对应的不确定，不同深度置信度在总误差的权重不同，优化更为精确。
 
 
+\section{实验}
+本节验证前文研究的基于特征的半稠密SLAM算法，根据算法在TUM数据集下的实验结果，从算法定位精度、深度一致性检验对地图重构的影响和地图重建效果三个方面与当前主流的单目SLAM算法进行比较，并在真实环境下进行测试。所有实验实时运行在处理器$i7-4720$，内存$8G$的笔记本计算机上；使用Ubuntu 14.04操作系统，算法由C++实现。实验测试中算法参数设置为$N=7$，$\sigma_I=20$，$\lambda_G=8$，$\lambda_L = 80^\circ$，$\lambda_\theta=45^\circ$，$\lambda_N=4$。
 
+\subsection{定位精度}
+选择TUM数据集中的5个代表性场景，取5次实验定位精度的均值。将改进后的算法与当前优秀的单目SLAM算法：ORB-SLAM、LSD-SLAM进行比较，实验结果如下表\ref{tab4.1}所示。
+
+\begin{table}[h]		%表格环境
+% \multicolumn是跨列功能，第一个参数2，表示跨两列，第二个参数c|，表示文字置中，并在栏位右边画一条直线框，最后一个参数即是要填入的文字
+%\multirow是跨行功能，第一个参数2，表示跨两行，第二个参数*，表示系统自动调整文字，最后一个参数即是要填入的文字
+\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}		%单元格内容强制换行
+\renewcommand\arraystretch{1.5}		%增加行间距
+\centering
+\caption{轨迹定位精度}   % 表格标题，在表格内容之前
+\label{tab4.1}
+	\begin{tabular*}{0.9\textwidth}{@{\extracolsep{\fill}}cccc}  %生成行和列的表格
+	%\begin{tabular}{p{2cm}p{1.5cm}p{1.5cm}p{1.5cm}}	
+	
+	\toprule
+	
+	\multicolumn{1}{c}{\multirow{2}{*}{Seq.}} &
+	\multicolumn{3} {c} {\bfseries\tabincell{c} {关键帧轨迹均方根误差 RMSE(cm)}} \\
+	\cline{2-4}								%在上一行下面，2-4列画横线
+	\multicolumn{1}{c}{}&
+	\multicolumn{1}{c}{ORB-SLAM}	&
+	\multicolumn{1}{c}{LSD-SLAM}	&
+	\multicolumn{1}{c}{改进算法}		\\	
+	
+	\midrule
+	
+	
+	\multicolumn{1}{c}{fr2/desk}	&
+	\multicolumn{1}{c}{0.88}		&
+	\multicolumn{1}{c}{4.57}		&
+	\multicolumn{1}{c}{0.85}		\\
+	
+	\multicolumn{1}{c}{fr2/desk\_ person}	&
+	\multicolumn{1}{c}{0.63}		&
+	\multicolumn{1}{c}{31.73}		&
+	\multicolumn{1}{c}{0.77}		\\
+
+	\multicolumn{1}{c}{fr3/nostructure\_ texture\_ near}	&
+	\multicolumn{1}{c}{1.39}		&
+	\multicolumn{1}{c}{7.54}		&
+	\multicolumn{1}{c}{1.51}		\\		
+	
+	\multicolumn{1}{c}{fr3/structure\_ texture\_ near}	&
+	\multicolumn{1}{c}{1.58}		&
+	\multicolumn{1}{c}{8.63}		&
+	\multicolumn{1}{c}{1.47}		\\	
+	
+	\multicolumn{1}{c}{fr3/long\_ office}	&
+	\multicolumn{1}{c}{3.45}		&
+	\multicolumn{1}{c}{38.53}		&
+	\multicolumn{1}{c}{3.53}		\\
+
+	\bottomrule
+	
+	\end{tabular*}
+\end{table}
+
+根据表\ref{tab4.1}的实验结果可以发现，在相同的测试条件和场景下，改进后的基于特征的单目半稠密SLAM算法定位精度与基于特征的ORB-SLAM算法接近，均好于基于直接法的LSD-SLAM算法。主要原因可能是改进的基于特征的单目半稠密SLAM算法继承了基于特征的SLAM算法的优点，利用特征跟踪和匹配的方法估计位姿，具有较好的鲁棒性和视角不变性，后端进行地图与关键帧位姿的联合优化，进一步提高定位精度。而基于直接法的SLAM算法对传感器参数较为敏感，由于计算复杂度将地图与关键帧位姿联合简化为pose图优化，定位精度较低。
+
+\subsection{逆深度一致性检验对地图重构的影响}
+本章研究改进的基于特征的单目半稠密SLAM算法，其半稠密地图重构是在宽基线的关键帧间进行的，如果单纯使用直接法SLAM中的像素块匹配，会导致重构的半稠密地图包含很多离群值，重构精度和效果较差。本文引入地图点云的逆深度一致性检验(见本文4.4,4.5节)，剔除由于宽基线重构产生的地图离群值并对地图进行平滑处理。图\ref{fig4.3}展示采用逆深度一致性检验前后的重构效果。
+
+\begin{figure}[h]
+    \centering
+       	  \subfigure[逆深度一致性检验前]
+       	  {
+          %\includegraphics[scale=1]{figures/Fig4.3_a.png} 
+          \includegraphics[scale=1]{figures/Fig4-3_a.pdf}                    
+          }                    
+          \subfigure[逆深度一致性检验后]
+       	  {
+       	  %\includegraphics[scale=1]{figures/Fig4.3_b.png} 
+          \includegraphics[scale=1]{figures/Fig4-3_b.pdf}
+          }
+     \caption{逆深度一致性检验对地图重构的影响}
+\label{fig4.3}
+\end{figure}
+
+实验结果表明，逆深度一致性检验可以有效的剔除由于宽基线关键帧的极线搜索产生的地图点云离群值，并对地图起到平滑作用，显著提高半稠密地图的重构效果。
+
+\subsection{地图重建效果}
+本实验主要比较基于直接法的LSD-SLAM和本章研究改进的基于特征的单目半稠密SLAM算法的地图重构效果。选择TUM RGB-D数据集中的3个场景fr2/desk，fr3/nostructure\_ texture\_ near\_ with\_ loop，fr3/long\_ office\_ household进行测试，实验结果如下所示。
+
+
+\begin{figure}[h]
+    \centering
+       	  \subfigure[改进算法]
+       	  {
+          %\includegraphics[scale=1]{figures/Fig4.3_a.png} 
+          \includegraphics[scale=1]{figures/Fig4-4_a.pdf}                    
+          }                    
+          \subfigure[LSD-SLAM]
+       	  {
+       	  %\includegraphics[scale=1]{figures/Fig4.3_b.png} 
+          \includegraphics[scale=0.7]{figures/Fig4-4_a.pdf}
+          }
+     \caption{fr2/desk场景}
+\label{fig4.4}
+\end{figure}
+
+
+
+\begin{figure}[h]
+    \centering
+       	  \subfigure[改进算法]
+       	  {
+          %\includegraphics[scale=1]{figures/Fig4.3_a.png} 
+          \includegraphics[scale=0.8]{figures/Fig4-5_a.pdf}                    
+          }                    
+          \subfigure[LSD-SLAM]
+       	  {
+       	  %\includegraphics[scale=1]{figures/Fig4.3_b.png} 
+          \includegraphics[scale=0.6]{figures/Fig4-5_b.pdf}
+          }
+     \caption{fr3/nostructure\_ texture\_ near\_ with\_ loop场景}
+\label{fig4.5}
+\end{figure}
+
+
+
+\begin{figure}
+    \centering
+       	  \subfigure[改进算法]
+       	  {
+          %\includegraphics[scale=1]{figures/Fig4.3_a.png} 
+          \includegraphics[scale=1]{figures/Fig4-6_a.pdf}                    
+          }                    
+          \subfigure[LSD-SLAM]
+       	  {
+       	  %\includegraphics[scale=1]{figures/Fig4.3_b.png} 
+          \includegraphics[scale=0.8]{figures/Fig4-6_b.pdf}
+          }
+     \caption{fr3/long\_ office\_ household场景}
+\label{fig4.6}
+\end{figure}
+
+根据实验结果可以发现，在图\ref{fig4.4}和\ref{fig4.6}中，相比于LSD-SLAM，本章研究改进的基于特征的单目半稠密SLAM算法的重构地图含有较少的地图点云离群值，且轮廓清晰，可以通过重构地图识别出对应的物体。此外，在图\ref{fig4.6}的测试场景中，LSD-SLAM有时会发生跟踪丢失的情况，而本章的改进算法可以正常运行，保证较好的重构效果。但从图\ref{fig4.5}可以看出，LSD-SLAM在部分环境细节的地图重构上要好于本章的改进算法，可通过适当调整改进算法中的逆深度一致性检验的置信区间，提高重构地图的稠密性。
 
 \section{本章小结}
-
-采取了什么方法，针对出现的问题进行优化，表现出了比现有算法更好的性能。
-
+本章研究的基于特征的单目半稠密SLAM算法，采用像素块匹配和概率逆深度估计算法，可以在CPU下试试进行定位与周围环境的半稠密重构。与基于直接法的SLAM不同，选用经过局部BA或pose图优化后已知准确位姿的关键帧，在宽基线条件下对关键帧中像素梯度区域进行极线搜索获取逆深度假设，之后通过逆深度假设融合、一致性检验得到环境的半稠密地图。通过实验可以发现，相比于基于直接法的SLAM算法，本章研究的改进算法定位精度高，具有良好的旋转不变性、视角不变性和光度鲁棒性，可以重构环境半稠密地图，应用于后续的导航和路径规划。
 
 
 
