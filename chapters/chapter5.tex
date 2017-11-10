@@ -434,13 +434,41 @@ s \cr \delta \boldsymbol{\theta}_{xy} \cr \boldsymbol{b}_a \cr
 为了对前文研究的基于IMU预积分的惯性-视觉单目SLAM算法进行评估，本节从IMU初始化情况和轨迹定位精度两个方面进行实验。IMU初始化实验主要用于测试算法在初始化阶段估计的IMU的状态变量收敛程度和处理时间的增长速度；定位精度实验主要测试算法轨迹估计的尺度准确性和轨迹偏差。本节实验在公开数据集EuRoC\upcite{}上进行，EuRoC提供了11组无人机室内、室外飞行数据序列，每组数据提供采样频率$20Hz$的双目图像，采样频率为$200Hz$的IMU数据，且根据环境光照、纹理，运动速度和模糊情况将11组数据序列分为简单，中等和困难三种，并对每个飞行数据序列提供准确的真实飞行轨迹。整个实验实时运行在所有实验实时运行在处理器$i7-4720$，内存$8G$的笔记本计算机上。
 
 \subsection{IMU初始化}
+为了评估基于IMU预积分的惯性-视觉单目SLAM的IMU初始化算法的有效性，在EuRoC数据集MH\_ 02\_ easy飞行序列上进行测试。为了保证在IMU初始化时观测到所有变量，惯性-视觉单目SLAM算法需要运行一段时间，实验室在该时间段内重复执行多次IMU初始化，每次初始化时使用惯性-视觉单目SLAM地图中的所有关键帧。图\ref{fig5.3}展示IMU初始化算法估计的IMU传感器偏移量、轨迹尺度和处理时间。从图上可以看出，在$10-15s$后IMU初始化算法估计的状态变量基本收敛。图\ref{fig5.3-d}表示IMU初始化算法求解状态变量的线性方程\eqref{equ5.39}的条件数的变化趋势，可以发现经过一段时间条件数收敛到较小值，这也证明初始化算法需要一段时间充分观测所有变量。在图\ref{fig5.3-e}中IMU初始化算法处理时间近似线性增长，相比于同事估计所有状态变量\upcite{}，对需要初始化的状态变量进行分部估计可以有效提高计算效率。
 
-
-
-
+\begin{figure}[h]
+    \centering
+       	  \subfigure[]
+       	  {
+       	  \label{fig5.3-a}
+          %\includegraphics[scale=1]{figures/Fig4.3_a.png}                    
+          }                    
+          \subfigure[]
+       	  {
+       	  \label{fig5.3-b}
+       	  %\includegraphics[scale=1]{figures/Fig4.3_b.png} 
+          }
+          \subfigure[]
+       	  {
+          \label{fig5.3-c}
+          %\includegraphics[scale=1]{figures/Fig4.3_a.png}                    
+          }                    
+          \subfigure[]
+       	  {
+       	  \label{fig5.3-d}
+       	  %\includegraphics[scale=1]{figures/Fig4.3_b.png} 
+          }
+          \subfigure[]
+       	  {
+       	  \label{fig5.3-e}
+          %\includegraphics[scale=1]{figures/Fig4.3_a.png}                    
+          }                    
+     \caption{惯性-视觉单目SLAM的IMU初始化}
+\label{fig5.3}
+\end{figure}
 
 \subsection{定位精度}
-本节展示前文研究的基于IMU预积分的惯性-视觉单目SLAM算法在EuRoC中的6个飞行序列上的尺度估计准确性和定位精度，设置IMU初始化时间为$15s$，且在IMU初始化成功之后会进行一次全局BA。表\ref{tab5.1}中展示本文的惯性-视觉单目SLAM算法在6个数据集上的绝对轨迹的均方根误差(RMSE)和估计轨迹与真实轨迹对齐后的尺度值。
+本节展示前文研究的基于IMU预积分的惯性-视觉单目SLAM算法在EuRoC中的6个飞行序列上的尺度估计准确性和定位精度，设置IMU初始化时间为$25s$，且在IMU初始化成功之后会进行一次全局BA。表\ref{tab5.1}中展示本文的惯性-视觉单目SLAM算法在6个数据集上的绝对轨迹的均方根误差(RMSE)和估计轨迹与真实轨迹对齐后的尺度值。
 
 \begin{table}		%表格环境
 \newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}		%单元格内容强制换行
