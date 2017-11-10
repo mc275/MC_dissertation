@@ -438,39 +438,40 @@ s \cr \delta \boldsymbol{\theta}_{xy} \cr \boldsymbol{b}_a \cr
 
 \begin{figure}[h]
     \centering
-       	  \subfigure[]
+       	  \subfigure[加速度计偏移]
        	  {
        	  \label{fig5.3-a}
-          %\includegraphics[scale=1]{figures/Fig4.3_a.png}                    
+          \includegraphics[scale=0.4]{figures/Fig5-3_a.eps}                    
           }                    
-          \subfigure[]
+          \subfigure[陀螺仪偏移]
        	  {
        	  \label{fig5.3-b}
-       	  %\includegraphics[scale=1]{figures/Fig4.3_b.png} 
+       	  \includegraphics[scale=0.4]{figures/Fig5-3_b.eps} 
           }
-          \subfigure[]
+          \subfigure[轨迹尺度]
        	  {
           \label{fig5.3-c}
-          %\includegraphics[scale=1]{figures/Fig4.3_a.png}                    
-          }                    
-          \subfigure[]
+          \includegraphics[scale=0.4]{figures/Fig5-3_c.eps}                    
+          }\\
+          \subfigure[条件数]
        	  {
        	  \label{fig5.3-d}
-       	  %\includegraphics[scale=1]{figures/Fig4.3_b.png} 
+       	  \includegraphics[scale=0.4]{figures/Fig5-3_d.eps} 
           }
-          \subfigure[]
+          \subfigure[处理时间]
        	  {
        	  \label{fig5.3-e}
-          %\includegraphics[scale=1]{figures/Fig4.3_a.png}                    
-          }                    
+          \includegraphics[scale=0.4]{figures/Fig5-3_e.eps}                    
+          }    
      \caption{惯性-视觉单目SLAM的IMU初始化}
 \label{fig5.3}
-\end{figure}
+\end{figure}        
+          
 
 \subsection{定位精度}
 本节展示前文研究的基于IMU预积分的惯性-视觉单目SLAM算法在EuRoC中的6个飞行序列上的尺度估计准确性和定位精度，设置IMU初始化时间为$25s$，且在IMU初始化成功之后会进行一次全局BA。表\ref{tab5.1}中展示本文的惯性-视觉单目SLAM算法在6个数据集上的绝对轨迹的均方根误差(RMSE)和估计轨迹与真实轨迹对齐后的尺度值。
 
-\begin{table}		%表格环境
+\begin{table}[h]	%表格环境
 \newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}		%单元格内容强制换行
 \renewcommand\arraystretch{1}		%增加行间距
 \centering
@@ -495,74 +496,8 @@ s \cr \delta \boldsymbol{\theta}_{xy} \cr \boldsymbol{b}_a \cr
 
 
 \section{本章小结}
+本章研究基于IMU预积分的惯性-视觉单目SLAM算法，在传统基于特征的单目算法基础上，利用预积分算法对IMU测量数据进行处理，将IMU测量数据表示为最大后验观测模型的形式，通过SLAM后端非线性优化与IMU进行数据融合。实验表明，本章研究的惯性-视觉单目SLAM算法在IMU初始化阶段可以准确估计运动轨迹尺度和传感器偏移，定位精度高；IMU先验运动信息还可加速特征跟踪和匹配，提高算法鲁棒性。
 
-
-
-
-\iffalse
-A 3D rigid body transform $G{\rm{ }} \in {\rm{ }}SE(3)$  denotes rotation and translation in 3D,  i.e. is defined by
-
-\begin{equation}
-G=\left(
-    \begin{array}{cc}
-      R & t \\
-      0 & 1 \\
-    \end{array}
-  \right)
-    \ with
-    \ R\in SO(3)
-    \ and
-    \ t\in {\mathbb{R}}^{3}
-\end{equation}
-SE(3) and SO(3) is the concept of elements of Lie-Algebras.
-
-We define the 3D projective warp function $\omega $, which projects an image point ${\bf{p}}$ and its inverse depth ${\bf{d}}$ into a by $\xi $ transformed camera frame.
-
-\begin{equation}
-\begin{split}
-\omega(p,d,\xi):= \left(
-                     \begin{array}{c}
-                       x^{'}/z^{'} \\
-                       y^{'}/z^{'} \\
-                       1/z^{'} \\
-                     \end{array}
-                   \right) \ with \\
-                   \left(
-                     \begin{array}{c}
-                       x^{'} \\
-                       y^{'} \\
-                       z^{'} \\
-                       1 \\
-                     \end{array}
-                   \right):=\!exp_{\!se(\!3\!)}(\xi)
-                   \left(
-                     \begin{array}{c}
-                       p_{x}/d \\
-                       p_{y}/d  \\
-                       1/d  \\
-                       1 \\
-                     \end{array}
-                   \right)
-\end{split}
-\end{equation}
-
-A 3D similarity transform   denotes rotation, scaling and translation, i.e. is defined by
-
-\begin{equation}
-S=\left(
-    \begin{array}{cc}
-      sR & t \\
-      0 & 1 \\
-    \end{array}
-  \right)
-  \ with
-  \ R\in SO(3),t\in {\mathbb{R}}^{3}
-  \ and \ s\in {\mathbb{R}}^{+}
-\end{equation}
-
-As for rigid body transformations, a minimal representation is given by elements of the associated Lie-algebra $\xi  \in sim(3)$, which now have an additional degree of freedom, that is $\xi\in {\mathbb{R}}^{7}$.
-
-\fi
 
 
 

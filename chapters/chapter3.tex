@@ -175,7 +175,7 @@ u_2 \cr v_2 \cr 1 \cr
 \begin{figure}
 \centering
 %\includegraphics[scale=0.5]{figures/Fig3.5.png}
-\includegraphics[scale=0.35,angle=-90]{figures/Fig3-5.pdf}
+\includegraphics[scale=0.3,angle=-90]{figures/Fig3-5.pdf}
 \caption{直接法示意图}
 \label{fig3.5}
 \end{figure}
@@ -278,7 +278,7 @@ ORB特征由关键点和描述子两部分组成。其关键点成为"Oriented F
 \begin{figure}[h]
 \centering
 %\includegraphics[scale=0.5]{figures/Fig3.7.png}
-\includegraphics[scale=0.35,angle=-90]{figures/Fig3-7.pdf}
+\includegraphics[scale=0.3,angle=-90]{figures/Fig3-7.pdf}
 \caption{对极几何约束}
 \label{fig3.7}
 \end{figure}
@@ -460,126 +460,6 @@ R\!M\!S\!E(\boldsymbol{F}) &\doteq \left( {1 \over n} \sum\limits_{i=1}^n \left 
 
 %3.4
 \section{本章小结}
-本章介绍了单目视觉SLAM的结构框架、算法原理和分类，从实现原理，定位精度，鲁棒性和地图重建效果4个方面比较了经典的基于直接法的LSD-SLAM算法和基于特征的ORB-SLAM算法。结果表明，相比于基于直接法的LSD-SLAM算法，基于特征的ORB-SLAM算法具有较好的光度不变性和视角不变性，可以在宽基线条件下稳定匹配，对于快速运动鲁棒性好，适宜作为无人机的感知定位系统。但也存在两个问题，首先基于特征的ORB-SLAM算法重建地图为稀疏点云地图，环境信息较少，无法用于无人机的导航、避障与路径规划；另外，由于单目相机无法提供环境尺度，因而估计得到的轨迹尺度不确定。针对ORB-SLAM算法存在的问题，在第四章研究基于特征的SLAM算法的半稠密重建，提供丰富的环境信息；在第五章研究基于IMU-视觉融合的惯性视觉单目SLAM算法，解决单目SLAM算法的尺度问题。通过以上改进，使得本文研究的单目SLAM算法具有准确的尺度，较好的定位精度和丰富的环境信息，为无人机提供准确的位姿估计和环境信息。
+本章介绍了单目视觉SLAM的结构框架、算法原理和分类，从核心原理，定位精度，鲁棒性和地图重构4个方面比较了经典的基于直接法的LSD-SLAM算法和基于特征的ORB-SLAM算法。结果表明，相比于基于直接法的LSD-SLAM算法，基于特征的ORB-SLAM算法具有较好的光度不变性和视角不变性，可以在宽基线下稳定匹配，对于快速运动鲁棒性好，适宜作为无人机的感知定位系统。但也存在两个问题，首先基于特征的ORB-SLAM算法重建地图为稀疏点云地图，环境信息较少，无法用于无人机的导航、避障与路径规划；另外，由于单目相机无法提供环境尺度，因而估计得到的轨迹尺度不确定。针对ORB-SLAM算法存在的问题，在第四章研究基于特征的SLAM算法的半稠密重建，提供丰富的环境信息；在第五章研究基于IMU-视觉融合的惯性视觉单目SLAM算法，解决单目SLAM算法的尺度问题。通过以上改进，使得本文研究的单目SLAM算法具有准确的尺度，较好的定位精度和丰富的环境信息，为无人机提供准确的位姿估计和环境信息。
 
 
-
-
-\iffalse
-\begin{table}
-\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}		%单元格内容强制换行
-\centering
-\caption{TUM数据集下单目SLAM算法定位精度}	% NOTE!  caption goes _before_ the table contents !!
-\renewcommand\arraystretch{1.5}		%增加行间距
-%\begin{small}							%控制字体大小
-\begin{tabular}{p{2cm}p{1.5cm}p{1.5cm}p{1.5cm}}
-%\hline									%  结束的那一行画一根水平的直线
-\toprule
-% \multicolumn是跨列功能，第一个参数2，表示跨1列，第二个参数c|，表示文字置中，并 在栏位右边画一条直线框，最后一个参数即是要填入的文字
-\multicolumn{1}{c}{\multirow{3}{*}{Seq.}} & 
-\multicolumn{2} {c} {\bfseries\tabincell{c} {Absolute Key Frame Trajectory RMSE(cm)}} \\
-\cline{2-3}								%在上一行下面，2-4列画横线
-\multicolumn{1}{c}{}&   
-\multicolumn{1}{c}{\bfseries \tabincell{c}{LSD-SLAM} } &     
-\multicolumn{1}{c}{\bfseries \tabincell{c}{ semi-dense \\mono-VO}}  \\
-%\multicolumn{1}{c}{\bfseries \tabincell{c}{ RGB-D \\SLAM}} \\	
-%\cline{1-3}
-\midrule
-\multicolumn{1}{c}{fr2/desk}	&
-\multicolumn{1}{c}{5.65}		&
-\multicolumn{1}{c}{13.50}      \\
-%\multicolumn{1}{c}{2.58}   \\
-
-\multicolumn{1}{c}{Fr2/xyz}  &
-\multicolumn{1}{c}{2.15}     &
-\multicolumn{1}{c}{3.79}      \\
-%\multicolumn{1}{c}{1.34}    \\
-
-\multicolumn{1}{c}{sim/slowmo}  &
-\multicolumn{1}{c}{0.37}        &
-\multicolumn{1}{c}{2.21}        \\
-%\multicolumn{1}{c}{0.13}        \\
-%\hline
-\bottomrule
-\end{tabular}
-%\end{small}	
-\end{table}
-\fi
-
-
-
-
-\iffalse
-The current frames will replace the current key frames according with the Direct SE(3) image alignment. An existing key frame ${k_i} = ({I_i},{D_i},{V_i})$, the relative posture ${\xi _{ji}} \in se(3)$ of a new image ${I_j}$ is obtained by minimizing the variance-normalized photometric error
-
-\begin{equation}
-E_{p}(\xi _{ji}) = \sum\limits_{p \in \Omega _{D_{i}}} \left\|  \frac{r_{p}^{2} (p,\xi_{ji})}{\sigma_{r_{p}}^{2} (p,\xi_{ji})}  \right\|_{\delta}
-\end{equation}
-
-
-\begin{equation}
-r_{p}(p,\xi _{ji}): = I_{i}(p) - I_{j}(\omega (p,D_{i}(p),\xi _{ji}))
-\end{equation}
-
-\begin{equation}
-\sigma _{r_{p}} ^{2}(p,\xi _{ji}): = 2\sigma _{I} ^{2} + {\left( \frac {\partial r_{p}(p,\xi_{ji})} {\partial D_{i} (p)} \right)^{2}} V_{i}(p)
-\end{equation}
-
-The formula (13) is the Huber norm and applied to the normalized residual.
-
-\begin{equation}
-{\left\| r^{2} \right\|_{\delta}}:=\left\{\begin{array}{ll}
-\frac {r^{2}} {2\delta}            & |r|\leq \delta       \\
-|r|-\frac {\delta} {2}      & |r| > \delta
-\end{array} \right.
-\end{equation}
-
-
-
-
-If the camera moves too far away from the existing map, a new key frame is created from the most recent tracked image. We threshold a weighted combination of relative distance and angle to the current key frame
-
-\begin{equation}
-dist({\xi _{ji}}): = \xi _{ji}^TW{\xi _{ji}}
-\end{equation}
-
-Where W is a diagonal matrix containing the weights. Note that, as described in the following section, each key frame is scaled such that its mean inverse depth is one. This threshold is therefore relative to the current scale of the scene, and ensures sufficient possibilities for small-baseline stereo comparisons.
-
-Once a new frame is chosen to become a key frame, its depth map is initialized by projecting points from the previous key frame into it, followed by one iteration of spatial regularization and outlier removal [5]. Afterwards, the depth map is scaled to have a mean inverse depth of one -this scaling factor is directly incorporated into the sim(3) camera pose. Finally, it replaces the previous key frame and is used for tracking subsequent new frames.
-
-In contrast to RGB-D or Stereo SLAM, monocular SLAM is inherently scale-ambivalent, the absolute scale of the world is not observable. Over long trajectories this leads to scale-drift, which is one of the major sources of error [9]. Further, all distances are only defined up to scale, which causes threshold-based outlier rejection or parametrized robust kernels to be ill-defined.
-
-We select an advanced method in [1] for better perform direct, scale-drift image alignment, which is used to align two differently scaled key frames. For the photometric residual ${r_p}$, the depth residual ${r_d}$ which penalizes deviations in inverse depth between key frames, allowing to directly estimate the scaled transformation between them. The total error function becomes
-
-\begin{equation}
-E({\xi _{ji}}): = {\sum\limits_{p \in {\Omega _{{D_i}}}} {\left\| {\frac{{r_p^2(p,{\xi _{ji}})}}{{\sigma _{{r_p}(p,{\xi _{ji}})}^2}} + \frac{{r_d^2(p,{\xi _{ji}})}}{{\sigma _{{r_d}(p,{\xi _{ji}})}^2}}} \right\|} _\delta }
-\end{equation}
-the depth residual is computed
-
-\begin{equation}
-r_{d}(p,\xi _{ji}): = [p^{'}]_{3} - D_{j}([p^{'}]_{1,2})
-\end{equation}
-
-% 公式换行用 \\ 
-\begin{equation}
-\begin{split}
-\sigma_{r_{d}(p,\xi_{ji})} ^{2} :=V_{j}( [ p^{'} ]_{1,2} )  {\left( \frac {\partial r_{d}(p,\xi_{ji})} {\partial D_{j} \left[ p^{'} \right]_{1,2}}  \right)^{2}} + V_{i}(p) \left( \frac {\partial r_{d}(p,\xi_{ji})} {\partial D_{j}(p)} \right)
-\end{split}
-\end{equation}
-
-After a new key frame ${k_i}$ is added to the map, a number of possible loop closure key frames ${k_{ji}},....{k_{jn}}$ is collected. We use the closet ten key frames, as well as a suitable candidate. To avoid insertion of false or falsely tracked loop closures, we then perform a reciprocal tracking check. For each candidate ${k_{jk}}$ we independently track ${\xi _{{j_k}i}}$ and ${\xi _{i{j_k}}}$.
-
-\begin{equation}
-e\!(\!{\xi _{{j_k}i}},{\xi _{i{j_k}}})\!: \!= \!{\!(\!{\xi _{{j_k}i}} \!\circ \!{\xi _{i{j_k}}})\!^T}{\!(\!{\Sigma _{{j_k}i}}\! +\! Ad{j_{{j_k}i}}{\Sigma _{i{j_k}}}Adj_{{j_k}i}^T\!)\!^{ - 1}}\!(\!{\xi _{{j_k}i}}\! \circ\! {\xi _{i{j_k}}}\!)
-\end{equation}
-
-Only if the two estimates are statistically similar, if formula (18) is sufficiently small, they are added to the global map. For this, the adjoint $Ad{j_{{j_k}i}}$ is used to transform ${\Sigma _{i{j_k}}}$ into the correct tangent space.
-
-The map is represented as a pose graph of keyframes: Each keyframe $\kappa_{i}$ consists of a camera image $I_{i}\!:\!\Omega_{D_{i}}\!\rightarrow \!{\mathbb{R}}$,an inverse depth map $D_{i}\!:\!\Omega_{D_{i}}\!\rightarrow \!{\mathbb{R}}^{+}$, and the variance of the inverse depth $ V_{i}\!:\!\Omega_{D_{i}}\!\rightarrow \!{\mathbb{R}}^{+}$.Note that the depth map and variance are only defined for a subset of pixels $ \Omega_{D_{i}}\!\subset\!\Omega_{i} $, containing all image regions in the vicinity of sufficiently large intensity gradient, hence semi-dense.Edges $ \varepsilon_{ji}$ between keyframes contain their relative alignment as similarity transform $ \xi_{ji}\in sim(3) $, as well as the corresponding covariance matrix $\Sigma_{ji} $
-
-The map, consisting of a set of keyframes and tracked sim(3)-constraints, is continuously optimized in the background using pose graph optimization. The
-error function that is minimized is in accordance with the left-multiplication convention
-\begin{equation}
-E(\xi\!_{W\!_{1}}\!...\!\xi\!_{W\!_{n}})\!:\!= \sum\limits_{(\!\xi\!_{ji},\Sigma\!_{ji}\!)\!\in\!\varepsilon}\!(\!\xi_{ji}\!\circ\!\xi_{\!W_{i}\!}^{-1}\! \!\circ\!\xi_{\!W\!_{j}}\!)\!^{T}\!\Sigma_{\!j\!i}^{\!-1\!}\!(\!\xi_{ji}\!\circ\!\xi_{\!W_{i}\!}^{-1}\! \!\circ\!\xi_{\!W\!_{j}}\!)
-\end{equation}
-\fi

@@ -10,13 +10,34 @@
 %%==================================================
 
 
-\chapter*{总结与展望\markboth{总结与展望}{}}
-\addcontentsline{toc}{chapter}{总结与展望}
+\begin{conclusion}
+为解决无人机自主飞行中的导航和定位问题，本文围绕单目视觉SLAM算法进行研究，从算法和功能上对原有基于特征的单目SLAM进行改进和拓展。特别的，借鉴基于直接法的SLAM重构和多传感器融合领域的成果，对基于特征的单目SLAM算法进行改进和完善，取得了较好的效果。本文主要研究成果如下：
 
-We accomplish a monocular SLAM which is called LSD-SLAM using a novel direct method, which is tested in real-time on a CPU. It maintains and tracks on global map of environment, which is different from existing approach such as feature approach. It contains a pose graph of key frames with associated probabilistic semi-dense depth map. Major components of the LSD-SLAM are two feature. First, a direct method to align two key frames on sim(3), explicitly incorporating and detecting scale-drift. Second, a novel probabilistic approach in [10]to incorporate noise on the estimated depth maps. Our experiment showed that the LSD-SLAM reliably tracks, trajectories and maps for hand-held. We think that this method can be used in unmanned aerial vehicles(UAV) for navigation and flight control. The LSD-SLAM demonstrate the versatility, robustness and flexibility.
+\begin{enumerate}  [label={(\arabic*)}]
+\item 介绍多旋翼无人机导航定位算法发展，详细综述视觉SLAM的流程和核心算法。对视觉SLAM的理论和算法发展进行了总结，对比单目、双目和RGB-D三种SLAM算法特点应用场景。结合国内外视觉SLAM的发展现状和发展趋势，本文认为，就算法角度来看，单目视觉SLAM算法未来的发展方向是半稠密以上的环境地图重建，提供丰富的环境信息；从应用层面出发，单目SLAM可与IMU、激光雷达和GPS等多传感器进行数据融合，提供准确的尺度信息，改善单目SLAM鲁棒性。本文的改进工作主要围绕以上两点展开。
+
+\item 针对特定的使用对象，研究多旋翼无人机的数学模型和控制率设计。完成无人机的动力学和运动学建模,并对非线性部分进行线性简化。根据经典控制理论，使用串级PID控制器控制无人机的位置和姿态。通过MATLAB仿真，验证无人机数学模型的准确性和控制率的可行性，了解其运动特性，便于后续选择适合无人机的单目SLAM算法。
+
+\item 详细介绍了单目视觉SLAM的结构框架、算法原理和分类。从核心原理、定位精度、鲁棒性和地图重构4个方面系统的比较了基于直接法的LSD-SLAM和基于特征的ORB-SLAM。相比于LSD-SLAM，基于特征的ORB-SLAM具有较好的视角不变性和光度不变性，可以在宽基线下稳定匹配，对于快速运动具有较好的鲁棒性，适宜作为无人机的定位感知系统。但ORB-SLAM也存在一些问题，如重构地图稀疏，无法用于导航和路径规划；单目SLAM算法无法获取深度信息，运动轨迹和地图尺度不确定。
+
+\item 在第四种中，针对基于特征的ORB-SLAM算法地图稀疏的问题，研究一种基于特征的单目半稠密SLAM算法。该算法参考直接法SLAM重构原理，采用像素块匹配和基于概率的逆深度假设进行半稠密重构。针对宽基线下的像素块匹配重构地图点云逆深度离群值较多的问题，引入逆深度一致性检剔除离群值，提高半稠密地图重构效果。实验表明改进后的基于特征的单目半稠密SLAM算法定位精度高，重构的半稠密地图效果好，可以用于后续的无人机导航和定位。
+
+\item 在第五章中，就单目SLAM算法尺度不确定的问题，研究基于IMU预积分的惯性-视觉SLAM算法，在传统基于特征的SLAM基础上，通过预积分算法对IMU数据进行处理，将IMU测量数据表示为最大后验观测模型的形式，通过SLAM的后端非线性优化与
+IMU进行数据融合。实验表明，基于IMU预积分的惯性-视觉SLAM算法可以准确估计运动轨迹的尺度和传感器偏移，整个算法定位精度高；IMU先验运动信息还可加速特征跟踪和匹配，提高算法鲁棒性。
+\end{enumerate}
+
+
+针对以上援救成果和结论，本文对应用于多旋翼无人机导航定位的单目SLAM算法进行了深入研究与全面分析。但由于时间有限，能力欠缺，仍存在一些不足，后续工作可针对以下几个方面深入展开：
+
+\begin{enumerate}  [label={(\arabic*)}]
+\item 本文研究的单目半稠密重建只使用CPU处理，因而相机图片质量和帧率均受到限制。可考虑采用GPU加速的方法进行三维重构，可提高处理运算效率，增加地图稠密程度。
+
+\item 当前针对惯性-视觉SLAM的IMU初始化没有公认的判定方法确定IMU初始化的准确性，后续可考虑结合线性系统的条件数研究自动的判定准则，判断IMU初始化的状态变量准确性。
+
+\end{enumerate}
 
 
 
-\iffalse
-本文采用……。{\color{blue}（结论作为学位论文正文的最后部分单独排写，但不加章号。结论是对整个论文主要结果的总结。在结论中应明确指出本研究的创新点，对其应用前景和社会、经济价值等加以预测和评价，并指出今后进一步在本研究方向进行研究工作的展望与设想。结论部分的撰写应简明扼要，突出创新性。）本文采用……。（结论作为学位论文正文的最后部分单独排写，但不加章号。结论是对整个论文主要结果的总结。在结论中应明确指出本研究的创新点，对其应用前景和社会、经济价值等加以预测和评价，并指出今后进一步在本研究方向进行研究工作的展望与设想。结论部分的撰写应简明扼要，突出创新性。）}
-\fi
+
+
+\end{conclusion}

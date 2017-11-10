@@ -57,7 +57,7 @@ x_j^T F_{ji}x_p = x^T_jl_j=0 \  \rightarrow \  v_j = m \cdot u_j+n
 \begin{figure}
 \centering
 %\includegraphics[scale=0.3]{figures/Fig4.2.png}
-\includegraphics[scale=0.25,angle=-90]{figures/Fig4-2.pdf}
+\includegraphics[scale=0.2,angle=-90]{figures/Fig4-2.pdf}
 \caption{极线搜索}
 \label{fig4.2}
 \end{figure}
@@ -281,7 +281,7 @@ d_p^* = \min_{d_p} \sum\limits_{j,n} \left( d_{j,n} - d_p r_z^{ji} X_p - t_z^{ji
           \subfigure[LSD-SLAM]
        	  {
        	  %\includegraphics[scale=1]{figures/Fig4.3_b.png} 
-          \includegraphics[scale=0.7]{figures/Fig4-4_a.pdf}
+          \includegraphics[scale=0.7]{figures/Fig4-4_b.pdf}
           }
      \caption{fr2/desk场景}
 \label{fig4.4}
@@ -326,121 +326,8 @@ d_p^* = \min_{d_p} \sum\limits_{j,n} \left( d_{j,n} - d_p r_z^{ji} X_p - t_z^{ji
 根据实验结果可以发现，在图\ref{fig4.4}和\ref{fig4.6}中，相比于LSD-SLAM，本章研究改进的基于特征的单目半稠密SLAM算法的重构地图含有较少的地图点云离群值，且轮廓清晰，可以通过重构地图识别出对应的物体。此外，在图\ref{fig4.6}的测试场景中，LSD-SLAM有时会发生跟踪丢失的情况，而本章的改进算法可以正常运行，保证较好的重构效果。但从图\ref{fig4.5}可以看出，LSD-SLAM在部分环境细节的地图重构上要好于本章的改进算法，可通过适当调整改进算法中的逆深度一致性检验的置信区间，提高重构地图的稠密性。
 
 \section{本章小结}
-本章研究的基于特征的单目半稠密SLAM算法，采用像素块匹配和概率逆深度估计算法，可以在CPU下试试进行定位与周围环境的半稠密重构。与基于直接法的SLAM不同，选用经过局部BA或pose图优化后已知准确位姿的关键帧，在宽基线条件下对关键帧中像素梯度区域进行极线搜索获取逆深度假设，之后通过逆深度假设融合、一致性检验得到环境的半稠密地图。通过实验可以发现，相比于基于直接法的SLAM算法，本章研究的改进算法定位精度高，具有良好的旋转不变性、视角不变性和光度鲁棒性，可以重构环境半稠密地图，应用于后续的导航和路径规划。
+本章研究的基于特征的单目半稠密SLAM算法，采用像素块匹配和基于概率的逆深度假设，可以在CPU下试试进行定位与周围环境的半稠密重构。与基于直接法的SLAM不同，选用经过局部BA或pose图优化后已知准确位姿的关键帧，在宽基线条件下对关键帧中像素梯度区域进行极线搜索获取逆深度假设，之后通过逆深度假设融合、一致性检验得到环境的半稠密地图。通过实验可以发现，相比于基于直接法的SLAM算法，本章研究的改进算法定位精度高，具有良好的旋转不变性、视角不变性和光度鲁棒性，可以重构环境半稠密地图，应用于后续的导航和路径规划。
 
 
 
 
-
-
-\iffalse
-We evaluate the LSD algorithm hand holding camera in indoor environment. We test two time for the different sample key frames. The result is show in Fig.4 The picture (a) and (b) are the reference image and the key frame. The (c) and (d) are the reconstruction 3D map of the LSD-SLAM. The result is expressed the more key frames can be get the more detail of the environment, now that the noisy of the environment will affect the performance of LSD.
-
-\begin{figure}
-    \centering
-       %\begin{minipage}{5cm}
-       	  \subfigure[]
-       	  {
-          \includegraphics[scale=.2]{figures/Fig4(a)}          
-          %\subcaption{}
-          }                    
-          \subfigure[]
-       	  {
-          \includegraphics[scale=.2]{figures/Fig4(b)}
-          %\subcaption{}
-          }
-          \hspace{0in}
-     
-          \subfigure[]
-       	  {
-          \includegraphics[scale=.25]{figures/Fig4(c)}
-          %\subcaption{}
-		  }
-		  \subfigure[]
-       	  {          
-          \includegraphics[scale=.2]{figures/Fig4(d)}
-          %\subcaption{}
-          }
-          \hspace{0in}
-       %\end{minipage}
-     \caption{The indoor LSD-SLAM Map}
-\end{figure}
-
-\fi
-
-
-
-\iffalse
-We evaluate the LSD-SLAM performance in outdoor. We accomplish the reconstruction the 3D map in diverse scene which is different distance. The result is expressed in Fig.5
-
-The picture (a) and (b) are the different distance scene reference image for hand holding camera. The (c) and (d) is the reconstruction map of the LSD-SLAM. We can find that the mapping is completely reconstructed the scene information and the noisy is low in outdoor environment. This can be used in unmanned aerial vehicle(UAV) navigation and localization. The LSD-SLAM is reliable and robustness.
-
-\begin{figure}
-    \centering
-       %\begin{minipage}{5cm}
-       	  \subfigure[]
-       	  {
-          \includegraphics[scale=.2]{figures/Fig5(a)}          
-          %\subcaption{}
-          }                    
-          \subfigure[]
-       	  {
-          \includegraphics[scale=.2]{figures/Fig5(b)}
-          %\subcaption{}
-          }
-          \hspace{0in}
-     
-          \subfigure[]
-       	  {
-          \includegraphics[scale=.25]{figures/Fig5(c)}
-          %\subcaption{}
-		  }
-		  \subfigure[]
-       	  {          
-          \includegraphics[scale=.2]{figures/Fig5(d)}
-          %\subcaption{}
-          }
-          \hspace{0in}
-       %\end{minipage}
-     \caption{The outdoor LSD-SLAM Map}
-\end{figure}
-\fi
-
-
-
-
-\iffalse
-\begin{table}
-\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}
-\centering
-
-    \caption{Localization Error in Tum Dataset}     % NOTE!  caption goes _before_ the table contents !!
-    
-	\renewcommand\arraystretch{1.5}
-    \begin{small}
-    \begin{tabular}{p{2cm}p{1.5cm}p{1.5cm}p{1.5cm}}
-    \hline
-
-    \multicolumn{1}{c}{\multirow{3}{*}{Seq.}}
-    & \multicolumn{3} {c} {\bfseries\tabincell{c} {Absolute Key Frame \\ Trajectory RMSE(cm)}} \\
-    \cline{2-4}
-    \multicolumn{1}{c}{}&   \multicolumn{1}{c}{\bfseries \tabincell{c}{LSD-SLAM} }      &     \multicolumn{1}{c}{\bfseries \tabincell{c}{ semi-dense \\mono-VO}}   & \multicolumn{1}{c}{\bfseries \tabincell{c}{ RGB-D \\SLAM}} \\	
-
-    \cline{1-4}
-
-
-  \multicolumn{1}{c}{fr2/desk}     &\multicolumn{1}{c}{5.65}      &\multicolumn{1}{c}{13.50}       &\multicolumn{1}{c}{2.58}   \\
-
-  \multicolumn{1}{c}{Fr2/xyz}       &\multicolumn{1}{c}{2.15}      &\multicolumn{1}{c}{3.79}        &\multicolumn{1}{c}{1.34}   \\
-
-  \multicolumn{1}{c}{sim/slowmo}    &\multicolumn{1}{c}{0.37}      &\multicolumn{1}{c}{2.21}        &\multicolumn{1}{c}{0.13}   \\
-
-  \hline
-
-    \end{tabular}
-    \end{small}
-\end{table}
-
-The LSD-SLAM is evaluated on the Tum dataset. It is very challenging because of containing fast rotational movement, strong motion blur and rolling shutter artifacts. The result is displayed in tableⅠand compared with other algorithm for the localization accuracy.We use the very first depth map to bootstrap the system and get the correct initial scale.
-
-\fi

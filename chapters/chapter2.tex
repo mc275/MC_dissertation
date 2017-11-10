@@ -10,11 +10,10 @@
 %%==================================================
 \chapter{多旋翼无人机控制系统设计}
 \label{chap:control design}
-本章主要介绍多旋翼无人机数学模型和控制算法设计，研究多旋翼无人机的运动特性，便于之后分析和选择适合多旋翼无人机的视觉定位算法。
 
 %2.1
 \section{多旋翼无人机建模}
-多旋翼无人机模型如图\ref{fig2.1}所示，分为四个部分：刚体运动学模型，刚体动力学模型，控制效率模型和动力单元模型。刚体运动学模型与无人机的质量和受力无关，以质点为模型研究无人机位置、速度、姿态、角速度等参量的变化。刚体动力学模型，研究物体所受力和力矩与运动状态变化的关系。多旋翼无人机与一般刚体动力学模型最大的不同在于螺旋桨拉力方向始终与机体坐标系$z_b$轴的负方向一致，以上两个模型又统称为刚体模型。控制效率模型研究不同机型对螺旋桨拉力和力矩的分配情况。动力单元模型则研究多旋翼无人机动力装置电机的数学模型。
+多旋翼无人机模型结构如图\ref{fig2.1}所示，分为四个部分：刚体运动学模型，刚体动力学模型，控制效率模型和动力单元模型。刚体运动学模型与无人机的质量和受力无关，以质点为模型研究无人机位置、速度、姿态、角速度等参量的变化。刚体动力学模型，研究物体所受力和力矩与运动状态变化的关系。多旋翼无人机与一般刚体动力学模型最大的不同在于螺旋桨拉力方向始终与机体坐标系$z_b$轴的负方向一致，以上两个模型又统称为刚体模型。控制效率模型研究不同机型对螺旋桨拉力和力矩的分配情况。动力单元模型则研究多旋翼无人机动力装置电机的数学模型。
 \begin{figure}[h]
 \centering
 %\includegraphics[scale=0.4]{figures/Fig2.1.png}
@@ -253,49 +252,39 @@ T = K_{pz} \left( z^* -z  \right) + K_{dz} \left( \dot{z}^* - \dot{z}  \right) +
 其中，$z^*$表示目标高度，$z$，$\dot{z}$表示无人机反馈的高度位置和速度。$G_0$是前馈控制量，抵消重力的影响，避免高度控制中的定常干扰。
 
 %2.3
-\section{ 数学仿真验证}
+\section{仿真验证}
+根据前文中的多旋翼无人机动力学模型，利用MATLAB的S函数在Simulink环境下搭建多旋翼无人机仿真模型；根据上节设计的控制率，搭建串级PID无人机控制器，整个仿真系统如图\ref{fig2.4}所示。
+\begin{figure}[h]
+\centering
+	%\subfigure[LSD-SLAM]
+    
+		\includegraphics[scale=0.4]{figures/Fig2.4.png}
+	
+\caption{多旋翼无人机控制仿真系统}
+\label{fig2.4}
+\end{figure}
 
+图\ref{fig2.4}控制仿真系统分为三个部分：外部未封装的部分为串级PID控制器，负责控制无人机的位置和姿态；中间的模块为控制分配模型，将控制器的输出转换为无人机的电机转速；最后的模块为无人机刚体模型，将电机转速转换为飞行器的运动。该仿真系统可以实现无人机的定点悬停，设置悬停点的坐标为$(3,2.5,1.8)$，仿真结果如下图\ref{fig2.5}所示。由实验结果可知，该仿真模型可以控制无人机在指定位置保持悬停，大约7秒后无人机飞到指定位置，整个控制过程较为平滑，姿态角无大机动变化。
+
+\begin{figure}[h]
+\centering
+	\subfigure[位置控制]
+    {
+		\includegraphics[scale=.18]{figures/Fig2-5_a.eps}
+	}
+	\subfigure[姿态控制]
+    {	
+		\includegraphics[scale=.18]{figures/Fig2-5_b.eps}
+	}
+	\subfigure[运动轨迹]
+    {	
+		\includegraphics[scale=.2]{figures/Fig2-5_c.eps}
+	}
+\caption{无人机控制仿真结果}
+\label{fig2.5}
+\end{figure}
 
 
 \section{本章小结}
-
-
-
-\iffalse
-%2.4
-%\section{Weighted Gauss-Newton Optimization on Lie-Manifolds}
-Two images are aligned by Gauss-Newton minimization of the photometric error
-\begin{equation}
-E(\xi)=\sum( I_{ref}(p_{i} - I( \omega( p_{i},D_{ref}(p_{i}),\xi ) ))^{2}
-\end{equation}
-which gives the maximum-likelihood estimator for ${\mathbf{\xi }}$ assuming Gaussian residuals. We use a left-compositional formulation. Starting with an initial estimate ${{\mathbf{\xi }}^{{\mathbf{(0)}}}}$, in each iteration a left-multiplied increment $\delta {{\mathbf{\xi }}^{{\mathbf{(n)}}}}$ is computed by solving for the minimum of Gauss-Newton second-order approximation of E.
-\begin{equation}
-\delta\xi^{n}=-(J^{T}J)^{-1}J^{T}r(\xi^{n}) \ with \  \left. J=\frac{\partial r(\varepsilon\circ\xi^{n})}{\partial \varepsilon} \right|_{\varepsilon=0}
-\end{equation}
-
-where ${\mathbf{J}}$ is the derivative of the stacked residual vector ${ r=(r_{1},...,r_{n})^{T} }$ with respect to a left-multiplied increment, and ${{\mathbf{J}}^{\mathbf{T}}}{\mathbf{J}}$ the Gauss-Newton approximation of the Hessian of $E$. The new estimate is then obtained by multiplication with the computed update
-
-\begin{equation}
-\xi ^{(n + 1)} = \delta \xi ^{(n)} \circ \xi ^{(n)}
-\end{equation}
-
-In order to be robust to outliers arising from occlusions or reflections, different weighting-schemes have been proposed by [7].
-
-\begin{equation}
-E(\xi)=\sum\limits_i \omega_{i}(\xi)r_{i}(\xi)
-\end{equation}
-and the update is computed as
-
-\begin{equation}
-\delta {\xi ^{(n)}} =  - (J^{T}WJ)^{ - 1}J^{T}W_{r}({\xi ^{(n)}})
-\end{equation}
-
-Assuming the residuals to be independent, the last iteration ${({J^T}WJ)^{ - 1}}$ is an estimate for the covariance   of a left-multiplied error onto the final result. The default type-implementation in g2o assumes right-multiplication [8].
-
-\begin{equation}
-\xi ^{(n)} = \varepsilon  \circ \xi _{true} \ with \ \varepsilon \sim N(0,\sum \varepsilon  )
-\end{equation}
-\fi
-
-
+本章主要研究多旋翼无人机的模型和控制系统设计。针对无人机的运动学模型和运动学模型的非线性部分进行线性近似和化简，并根据简化模型设计串级PID控制器，完成无人机的位置控制和姿态控制。通过MATLAB仿真，验证无人机建模的准确性和控制算法的可行性，了解多旋翼无人机的运动特性，便于之后分析和选择适合无人机的视觉SLAM算法。
 
