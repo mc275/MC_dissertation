@@ -1,9 +1,9 @@
 
-del demo.pdf
-xelatex -no-pdf --interaction=nonstopmode demo
-bibtex demo
-xelatex -no-pdf --interaction=nonstopmode demo
-xelatex --interaction=nonstopmode demo
+del paper.pdf
+xelatex -no-pdf --interaction=nonstopmode paper
+bibtex paper
+xelatex -no-pdf --interaction=nonstopmode paper
+xelatex --interaction=nonstopmode paper
 
-start "" "demo.pdf"
+start "" "paper.pdf"
 
