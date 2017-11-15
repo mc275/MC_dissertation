@@ -14,44 +14,45 @@
 
 \section{李群与李代数性质}
 
-李群中的特殊正交群$SO(3) \doteq \{ \boldsymbol{R} \in \mathds{R}^{3 \times 3}:\ \boldsymbol{R}^T \boldsymbol{R}=\boldsymbol{I},det(\boldsymbol{R})=\boldsymbol{I} \}$表示刚体在三维空间的旋转矩阵，李群$SO(3)$在流行空间上单位元素处的正切为李代数$\mathfrak{so}(3) \doteq \{ \boldsymbol{\phi}^\wedge: \boldsymbol{\phi} \in  \mathds{R}^3  \}$，其中$()^\wedge$表示向量的反对称矩阵，但对对称矩阵具有如下性质。
-\begin{equation}
-\boldsymbol{a}^\wedge \boldsymbol{b} = - \boldsymbol{b}^\wedge \boldsymbol{a} \ \ \ \forall \boldsymbol{a},\boldsymbol{b} \in \mathds{R}^3
-\end{equation}
+李群中的特殊正交群$SO(3) \doteq \{ \boldsymbol{R} \in \mathds{R}^{3 \times 3}:\ \boldsymbol{R}^T \boldsymbol{R}=\boldsymbol{I},det(\boldsymbol{R})=\boldsymbol{I} \}$表示刚体在三维空间的旋转矩阵，李群$SO(3)$在流型空间上单位元素处的正切为李代数$\mathfrak{so}(3) \doteq \{ \boldsymbol{\phi}: \boldsymbol{\phi} \in  \mathds{R}^3  \}$。
 李代数可以通过指数映射$\exp(\cdot)$与李群相关联，有
 \begin{equation}
 \label{equ1}
 \boldsymbol{R} = \exp \left( \boldsymbol{\phi}^\wedge \right) = \boldsymbol{I}+{ \sin( \Vert \boldsymbol{\phi} \Vert) \over \Vert \boldsymbol{\phi} \Vert } \boldsymbol{\phi}^{\wedge} + { {1-\cos(\Vert \boldsymbol{\phi} \Vert)} \over \Vert \boldsymbol{\phi} \Vert^2 }\left(\boldsymbol{\phi}^{\wedge}\right)^2
 \end{equation}
+其中$(\cdot)^\wedge$表示向量的反对称矩阵，反对称矩阵具有如下性质。
+\begin{equation}
+\boldsymbol{a}^\wedge \boldsymbol{b} = - \boldsymbol{b}^\wedge \boldsymbol{a} \ \ \ \forall \boldsymbol{a},\boldsymbol{b} \in \mathds{R}^3
+\end{equation}
 李群也可通过对数映射$\log(\cdot)$与李代数相关联，设$\boldsymbol{\phi} = \boldsymbol{a} \varphi$
 \begin{equation}
 \label{equ2}
 \begin{aligned}
-\boldsymbol{\phi}^{\wedge} &= \log(\boldsymbol{R}) = { \varphi \cdot \left(\boldsymbol{R} - \boldsymbol{R}^T \right)  \over 2 \sin(\varphi) }
+\boldsymbol{\phi} &= \log(\boldsymbol{R}) = { \varphi \cdot \left(\boldsymbol{R} - \boldsymbol{R}^T \right)  \over 2 \sin(\varphi) }
 \\
 \varphi &= \cos^{-1} \left( tr(\boldsymbol{R})-1 \over 2 \right)
 \end{aligned}
 \end{equation}
-李代数到李群的指数映射的泰勒展看的一阶近似可以表示为
+李代数到李群的指数映射泰勒展开的一阶近似可以表示为
 \begin{equation}
 \label{equ3}
 \begin{aligned}
 \exp\left( \boldsymbol{\phi}^{\wedge} \right) & \approx  \boldsymbol{I} + \boldsymbol{\phi}^{\wedge}
 \\
-\exp\left( \boldsymbol{\phi}^{\wedge} + \delta\boldsymbol{\phi}^{\wedge}  \right) & \approx \exp \left( \boldsymbol{\phi}^{\wedge} \right)  \exp \left( J_r\left( \boldsymbol{\phi}^{\wedge} \right) \delta\boldsymbol{\phi}^{\wedge} \right)
+\exp\left( \boldsymbol{\phi}^{\wedge} + \delta\boldsymbol{\phi}^{\wedge}  \right) & \approx \exp \left( \boldsymbol{\phi}^{\wedge} \right)  \exp \left( J_r\left( \boldsymbol{\phi} \right) \delta\boldsymbol{\phi}^{\wedge} \right)
 \end{aligned}
 \end{equation}
-其中$J_r\left( \boldsymbol{\phi}^{\wedge} \right)$表示$SO(3)$相对于李代数微小增量的右雅各比矩阵
+其中$J_r\left( \boldsymbol{\phi} \right)$表示$SO(3)$相对于李代数微小增量的右雅各比矩阵
 \begin{equation}
 \label{equ4}
-J_r\left( \boldsymbol{\phi}^{\wedge} \right) = \boldsymbol{I} - {{1-\cos(\Vert \boldsymbol{\phi} \Vert)} \over \Vert \boldsymbol{\phi} \Vert^2 } \boldsymbol{\phi}^{\wedge}+
+J_r\left( \boldsymbol{\phi} \right) = \boldsymbol{I} - {{1-\cos(\Vert \boldsymbol{\phi} \Vert)} \over \Vert \boldsymbol{\phi} \Vert^2 } \boldsymbol{\phi}^{\wedge}+
 {{ \Vert \boldsymbol{\phi} \Vert-\sin(\Vert \boldsymbol{\phi} \Vert)} \over \Vert \boldsymbol{\phi^3} \Vert }\left(\boldsymbol{\phi}^{\wedge}\right)^2
 \end{equation}
-李代数指数映射与李群乘机有以下性质
+李代数指数映射与李群的乘积有以下性质
 \begin{equation}
 \label{equ5}
 \begin{aligned}
-\boldsymbol{R} \exp \left( \boldsymbol{\phi}^{\wedge} \right) \boldsymbol{R}^T &= \exp \left( \boldsymbol{R}  \boldsymbol{\phi}^{\wedge} \boldsymbol{R}^T \right) = \exp \left( \left( \boldsymbol{R} \boldsymbol{\phi} \right)^\wedge\right)
+\boldsymbol{R} \exp \left( \boldsymbol{\phi} \right) \boldsymbol{R}^T &= \exp \left( \boldsymbol{R}  \boldsymbol{\phi}^{\wedge} \boldsymbol{R}^T \right) = \exp \left(  \boldsymbol{R} \boldsymbol{\phi} \right)
 \\ 
 \Leftrightarrow \ \ \ \exp \left( \boldsymbol{\phi} \right) \boldsymbol{R} &=  \boldsymbol{R} \exp \left(\left( \boldsymbol{R}^T  \boldsymbol{\phi} \right)^\wedge\right)
 \end{aligned}

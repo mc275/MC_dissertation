@@ -11,7 +11,7 @@
 \chapter{基于特征的单目半稠密SLAM算法}
 \label{chap:Semi-Dense}
 
-针对第三章提到的基于特征的单目SLAM算法构建地图稀疏，无法用于避障和路径规划的问题。本章在原有基于算法的基础上，参考直接法SLAM半稠密地图构建的原理，研究一种基于特征的单目半稠密SLAM算法。不同于直接法SLAM中使用连续多帧对参考帧逆深度进行滤波的做法，本文使用经过局部BA(Local BA)和回环pose图优化后的关键帧，在保证定位精度的基础上重构环境的半稠密地图。本章研究的基于特征的单目半稠密SLAM算法主要包括5个部分，立体搜索约束，极线搜索，逆深度假设融合，帧内逆深度假设一致性检验和帧间逆深度假设一致性检验，算法流程如图\ref{fig4.1}所示。具体算法流程如下：
+针对基于特征的单目SLAM算法重构地图稀疏，无法用于避障和路径规划的问题。本章在原有基于算法的基础上，参考直接法SLAM半稠密地图构建的原理，研究一种基于特征的单目半稠密SLAM算法。不同于直接法SLAM中使用连续多帧对参考帧逆深度进行滤波的做法，本文使用经过局部BA(Local BA)和回环pose图优化后的关键帧，在保证定位精度的基础上重构环境的半稠密地图。本章研究的基于特征的单目半稠密SLAM算法主要包括5个部分，立体搜索约束，极线搜索，逆深度假设融合，帧内逆深度假设一致性检验和帧间逆深度假设一致性检验，算法流程如图\ref{fig4.1}所示。具体算法流程如下：
 \begin{enumerate}[label={(\arabic*)}]
 
 \item 对选取的关键帧$K_i$，提取图像中像素灰度梯度满足阈值的像素点，在临近的$N$个关键帧中进行极线搜索，得到像素的逆深度假设。
@@ -293,12 +293,12 @@ d_p^* = \min_{d_p} \sum\limits_{j,n} \left( d_{j,n} - d_p r_z^{ji} X_p - t_z^{ji
        	  \subfigure[改进算法]
        	  {
           %\includegraphics[scale=1]{figures/Fig4.3_a.png} 
-          \includegraphics[scale=0.7]{figures/Fig4-5_a.pdf}                    
+          \includegraphics[scale=0.8]{figures/Fig4-5_a.pdf}                    
           }                    
           \subfigure[LSD-SLAM]
        	  {
        	  %\includegraphics[scale=1]{figures/Fig4.3_b.png} 
-          \includegraphics[scale=0.55]{figures/Fig4-5_b.pdf}
+          \includegraphics[scale=0.6]{figures/Fig4-5_b.pdf}
           }
      \caption{fr3/nostructure\_ texture\_ near\_ with\_ loop场景}
 \label{fig4.5}
@@ -311,12 +311,12 @@ d_p^* = \min_{d_p} \sum\limits_{j,n} \left( d_{j,n} - d_p r_z^{ji} X_p - t_z^{ji
        	  \subfigure[改进算法]
        	  {
           %\includegraphics[scale=1]{figures/Fig4.3_a.png} 
-          \includegraphics[scale=0.9]{figures/Fig4-6_a.pdf}                    
+          \includegraphics[scale=1]{figures/Fig4-6_a.pdf}                    
           }                    
           \subfigure[LSD-SLAM]
        	  {
        	  %\includegraphics[scale=1]{figures/Fig4.3_b.png} 
-          \includegraphics[scale=0.7]{figures/Fig4-6_b.pdf}
+          \includegraphics[scale=0.8]{figures/Fig4-6_b.pdf}
           }
      \caption{fr3/long\_ office\_ household场景}
 \label{fig4.6}
