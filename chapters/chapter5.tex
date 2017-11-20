@@ -496,8 +496,25 @@ s \cr \delta \boldsymbol{\theta}_{xy} \cr \boldsymbol{b}_a \cr
 	\end{tabular*}
 \end{table}
 
-通过实验可以发现，除去EuRoc飞行序列V1\_ 03\_ difficult外，本文研究的基于IMU预积分的惯性-视觉单目SLAM算法在不同难度的测试数据上均可正常运行，且轨迹估计的尺度误差小于$1\%$。飞行序列V1\_ 03\_ difficult则是由于运动过于剧烈导致单目SLAM无法正常初始化。对于面积在$30 m^2$左右的室内环境定位精度小于$3cm$；对于面积在$300m^2$左右的工厂环境定位精度小于$10cm$，飞行轨迹图见附录\ref{traj_plot}所示。
+通过实验结果可以发现，除EuRoc飞行序列V1\_ 03\_ difficult外，本文研究的基于IMU预积分的惯性-视觉单目SLAM算法在不同难度的测试数据上均可正常运行，且轨迹估计的尺度误差小于$1\%$。飞行序列V1\_ 03\_ difficult则是由于运动过于剧烈导致单目SLAM无法正常初始化。对于面积在$30 m^2$左右的室内环境定位精度小于$3cm$；对于面积在$300m^2$左右的工厂环境定位精度小于$10cm$，飞行轨迹图见附录\ref{traj_plot}所示。
 
+图\ref{fig5.4}展示了在EuRoC飞行序列MH\_ 03\_ medium中，本章研究的基于IMU预积分的惯性-视觉单目SLAM算法与开源惯性-视觉算法OKVIS的轨迹精度比较。图\ref{fig5.4-a}表示轨迹绝对精度的箱型图，从图中可以看出，相比于OKVIS本章研究的算法定位精度较高；图\ref{fig5.4-b}表示轨迹误差分布的直方图，从图中可以看出本文研究的基于IMU预积分的惯性-视觉单目SLAM算法轨迹误差波动范围小，估计的轨迹精度一致性好。
+
+\begin{figure}[H]
+    \centering
+          \subfigure[]
+       	  {
+          \label{fig5.4-a}
+          \includegraphics[scale=0.16]{figures/Fig5-4_a.eps}                    
+          }
+          \subfigure[]
+       	  {
+       	  \label{fig5.4-b}
+       	  \includegraphics[scale=0.16]{figures/Fig5-4_b.eps} 
+          }  
+     \caption{与OKVIS定位精度比较}
+\label{fig5.4}
+\end{figure}   
 
 
 \section{本章小结}
