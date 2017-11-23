@@ -553,7 +553,7 @@ footskip=0.7cm% 页脚 1.8cm %
 \newcommand\englishdegree[1]{\def\BIT@value@englishdegree{#1}}
 \newcommand\englishmajor[1]{\def\BIT@value@englishmajor{#1}}
 \newcommand\englishchairman[1]{\def\BIT@value@englishchairman{#1}}
-
+\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}
 % "绘制"英文标题页
 \newcommand\makeEnglishInfo[1]{%
   \cleardoublepage

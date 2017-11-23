@@ -30,7 +30,6 @@
 
 \begin{figure}[h]
 \centering
-%\includegraphics[width=0.75\textwidth]{figures/figure1}
 \includegraphics[scale=0.4,angle=-90]{figures/Fig4-1.pdf}
 \caption{基于特征的半稠密单目SLAM算法流程图}
 \label{fig4.1}
@@ -56,7 +55,6 @@ x_j^T F_{ji}x_p = x^T_jl_j=0 \  \rightarrow \  v_j = m \cdot u_j+n
 
 \begin{figure}
 \centering
-%\includegraphics[scale=0.3]{figures/Fig4.2.png}
 \includegraphics[scale=0.2,angle=-90]{figures/Fig4-2.pdf}
 \caption{极线搜索}
 \label{fig4.2}
@@ -192,10 +190,10 @@ d_p^* = \min_{d_p} \sum\limits_{j,n} \left( d_{j,n} - d_p r_z^{ji} X_p - t_z^{ji
 \begin{table}[h]		%表格环境
 % \multicolumn是跨列功能，第一个参数2，表示跨两列，第二个参数c|，表示文字置中，并在栏位右边画一条直线框，最后一个参数即是要填入的文字
 %\multirow是跨行功能，第一个参数2，表示跨两行，第二个参数*，表示系统自动调整文字，最后一个参数即是要填入的文字
-\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}		%单元格内容强制换行
+%\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}		%单元格内容强制换行
 \renewcommand\arraystretch{1.5}		%增加行间距
 \centering
-\caption{定位精度}   % 表格标题，在表格内容之前
+\caption{轨迹定位精度}   % 表格标题，在表格内容之前
 \label{tab4.1}
 	\begin{tabular*}{0.9\textwidth}{@{\extracolsep{\fill}}cccc}  %生成行和列的表格
 	%\begin{tabular}{p{2cm}p{1.5cm}p{1.5cm}p{1.5cm}}	
@@ -252,12 +250,10 @@ d_p^* = \min_{d_p} \sum\limits_{j,n} \left( d_{j,n} - d_p r_z^{ji} X_p - t_z^{ji
     \centering
        	  \subfigure[逆深度一致性检验前]
        	  {
-          %\includegraphics[scale=1]{figures/Fig4.3_a.png} 
           \includegraphics[scale=1]{figures/Fig4-3_a.pdf}                    
           }                    
           \subfigure[逆深度一致性检验后]
        	  {
-       	  %\includegraphics[scale=1]{figures/Fig4.3_b.png} 
           \includegraphics[scale=1]{figures/Fig4-3_b.pdf}
           }
      \caption{逆深度一致性检验对地图重构的影响}
@@ -276,12 +272,10 @@ d_p^* = \min_{d_p} \sum\limits_{j,n} \left( d_{j,n} - d_p r_z^{ji} X_p - t_z^{ji
     \centering
        	  \subfigure[改进算法]
        	  {
-          %\includegraphics[scale=1]{figures/Fig4.3_a.png} 
           \includegraphics[scale=1]{figures/Fig4-4_a.pdf}                    
           }                    
           \subfigure[LSD-SLAM]
        	  {
-       	  %\includegraphics[scale=1]{figures/Fig4.3_b.png} 
           \includegraphics[scale=0.7]{figures/Fig4-4_b.pdf}
           }
      \caption{fr2/desk场景}
@@ -292,12 +286,10 @@ d_p^* = \min_{d_p} \sum\limits_{j,n} \left( d_{j,n} - d_p r_z^{ji} X_p - t_z^{ji
     \centering
        	  \subfigure[改进算法]
        	  {
-          %\includegraphics[scale=1]{figures/Fig4.3_a.png} 
           \includegraphics[scale=0.8]{figures/Fig4-5_a.pdf}                    
           }                    
           \subfigure[LSD-SLAM]
        	  {
-       	  %\includegraphics[scale=1]{figures/Fig4.3_b.png} 
           \includegraphics[scale=0.6]{figures/Fig4-5_b.pdf}
           }
      \caption{fr3/nostructure\_ texture\_ near\_ with\_ loop场景}
@@ -310,12 +302,10 @@ d_p^* = \min_{d_p} \sum\limits_{j,n} \left( d_{j,n} - d_p r_z^{ji} X_p - t_z^{ji
     \centering
        	  \subfigure[改进算法]
        	  {
-          %\includegraphics[scale=1]{figures/Fig4.3_a.png} 
           \includegraphics[scale=1]{figures/Fig4-6_a.pdf}                    
           }                    
           \subfigure[LSD-SLAM]
        	  {
-       	  %\includegraphics[scale=1]{figures/Fig4.3_b.png} 
           \includegraphics[scale=0.8]{figures/Fig4-6_b.pdf}
           }
      \caption{fr3/long\_ office\_ household场景}

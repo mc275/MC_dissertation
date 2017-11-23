@@ -38,31 +38,31 @@ SLAM技术最早始于1985年\upcite{[1.7]}，在1986年至1990年期间R.Smith�
 \begin{table}		%表格环境
 % \multicolumn是跨列功能，第一个参数2，表示跨两列，第二个参数c|，表示文字置中，并在栏位右边画一条直线框，最后一个参数即是要填入的文字
 %\multirow是跨行功能，第一个参数2，表示跨两行，第二个参数*，表示系统自动调整文字，最后一个参数即是要填入的文字
-\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}		%单元格内容强制换行
+%\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}		%单元格内容强制换行
 \renewcommand\arraystretch{1}		%增加行间距
 \centering
-\caption{现代代表性SLAM方案}   % 表格标题，在表格内容之前
+\caption{现代SLAM代表性方案}   % 表格标题，在表格内容之前
 \label{tab1.1}
 	\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}cccc}  %生成行和列的表格
 	\toprule
-	方案名称 &发布时间 &传感器类型 &特点 \\
+	方案名称 								&发布时间		&传感器类型 	&特点 \\
 	\midrule
-	MonoSLAM\upcite{[1.2]}		&2007		&单目		&第一个实时SLAM，EKF+稀疏角点		\\
-	PTAM\upcite{[1.19]}			&2007 		&单目		&关键帧+BA，优化作为后端 			\\
-	ORB-SLAM\upcite{[1.20]}		&2015		&单目为主		&ORB特征+三线程 					\\
-	LSD-SLAM\upcite{[1.21]}		&2014		&单目为主 	&直接法+半稠密 					\\
-	SVO\upcite{[1.22]}				&2014		&单目		&稀疏直接法，仅是视觉里程计 		\\
-	DTAM\upcite{[1.23]}				&2011		&单目		&直接法，单目稠密重建，需GPU加速	\\
-	DVO\upcite{[1.24]}				&2013		&RGB-D		&RGB-D直接法，稠密地图				\\
-	DSO\upcite{[1.25]}				&2016		&单目		&单目直接法，当前效果最好的直接法	\\
-	RTAB-MAP\upcite{[1.26]}			&2013		&双目/RGB-D	&较大场景的实用RGB-D SLAM			\\
+	MonoSLAM\upcite{[1.2]}				&2007		&单目		&第一个实时SLAM，EKF+稀疏角点		\\
+	PTAM\upcite{[1.19]}					&2007 		&单目		&关键帧+BA，优化作为后端 			\\
+	ORB-SLAM\upcite{[1.20]}				&2015		&单目为主		&ORB特征+三线程 					\\
+	LSD-SLAM\upcite{[1.21]}				&2014		&单目为主 	&直接法+半稠密 					\\
+	SVO\upcite{[1.22]}					&2014		&单目		&稀疏直接法，仅是视觉里程计 		\\
+	DTAM\upcite{[1.23]}					&2011		&单目		&直接法，单目稠密重建，需GPU加速	\\
+	DVO\upcite{[1.24]}					&2013		&RGB-D		&RGB-D直接法，稠密地图				\\
+	DSO\upcite{[1.25]}					&2016		&单目		&单目直接法，当前效果最好的直接法	\\
+	RTAB-MAP\upcite{[1.26]}				&2013		&双目/RGB-D	&较大场景的实用RGB-D SLAM			\\
 	RGB-D-SLAM-V2\upcite{[1.27]} 		&2014		&RGB-D		&完整的RGB-D稠密建图				\\
 	OKVIS\upcite{[1.28]}				&2015		&多目+IMU	&以优化融合为主的关键帧VIO			\\
 	ROVIO\upcite{[1.29]}				&2015		&单目+IMU	&EKF为融合为主的VIO				\\
 	Kinection Fusion\upcite{[1.30]} 	&2011		&RGB-D		&RGB-D在线重建经典工作				\\
-	Elastic Fusion\upcite{[1.31]} 	&2015		&RGB-D		&RGB-D在线重建，效果较好			\\
-	Cartographer\upcite{[1.32]}		&2016		&激光		&支持回环的激光SLAM				\\
-	LOAM\upcite{[1.33]}				&2014		&激光		&当前效果最好的激光SLAM			\\
+	Elastic Fusion\upcite{[1.31]} 		&2015		&RGB-D		&RGB-D在线重建，效果较好			\\
+	Cartographer\upcite{[1.32]}			&2016		&激光		&支持回环的激光SLAM				\\
+	LOAM\upcite{[1.33]}					&2014		&激光		&当前效果最好的激光SLAM			\\
 	\bottomrule
 	\end{tabular*}
 \end{table}

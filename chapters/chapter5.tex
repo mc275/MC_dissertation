@@ -21,7 +21,6 @@ IMU与视觉SLAM数据融合分为松耦合和紧耦合两种\upcite{[5.2]}。�
 
 \begin{figure}
 \centering
-%\includegraphics[scale=0.4]{figures/Fig5.1.png}
 \includegraphics[scale=0.35,angle=-90]{figures/Fig5-1.pdf}
 \caption{IMU-相机坐标系变换}
 \label{fig5.1}
@@ -119,7 +118,6 @@ P(\mathcal{X}_k | Z_k) & \varpropto P(\mathcal{X}_0)P(Z_k | \mathcal{X}_k) = P(\
 
 \begin{figure}[h]
 \centering
-%\includegraphics[scale=0.4]{figures/Fig5.2.png}
 \includegraphics[scale=0.6,angle=-90]{figures/Fig5-2.pdf}
 \caption{IMU预积分示意图}
 \label{fig5.2}
@@ -477,10 +475,10 @@ s \cr \delta \boldsymbol{\theta}_{xy} \cr \boldsymbol{b}_a \cr
 本节测试本章研究的基于IMU预积分的惯性-视觉单目SLAM算法在EuRoC中的6个飞行序列上的尺度估计准确性和定位精度，设置IMU初始化时间为$15s$，在IMU初始化成功之后会进行一次全局BA。表\ref{tab5.1}展示本文的惯性-视觉单目SLAM算法在6个数据集上的绝对轨迹的均方根误差(RMSE)和真实轨迹与估计轨迹对齐后的尺度值。
 
 \begin{table}[h]	%表格环境
-\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}		%单元格内容强制换行
+%\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}		%单元格内容强制换行
 \renewcommand\arraystretch{1}		%增加行间距
 \centering
-\caption{轨迹精度}   % 表格标题，在表格内容之前
+\caption{轨迹定位精度}   % 表格标题，在表格内容之前
 \label{tab5.1}
 	\begin{tabular*}{0.9\textwidth}{@{\extracolsep{\fill}}ccc}  %生成行和列的表格
 	\toprule

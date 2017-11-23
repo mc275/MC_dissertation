@@ -19,7 +19,6 @@
 
 \begin{figure}[h]
 \centering
-%\includegraphics[scale=0.3]{figures/Fig3.1.png}
 \includegraphics[scale=0.3,angle=-90]{figures/Fig3-1.pdf}
 \caption{视觉SLAM算法结构}
 \label{fig3.1}
@@ -31,7 +30,6 @@
 
 \begin{figure}[h]
 \centering
-%\includegraphics[scale=0.5]{figures/Fig3.2.png}
 \includegraphics[scale=0.7,angle=-90]{figures/Fig3-2.pdf}
 \caption{视觉里程计算法流程图}
 \label{fig3.2}
@@ -70,7 +68,6 @@ SLAM算法后端优化将SLAM看作最大后验估计问题，且大都采用因
 
 \begin{figure}
 \centering
-%\includegraphics[scale=0.5]{figures/Fig3.3.png}
 \includegraphics[scale=0.5,angle=-90]{figures/Fig3-3.pdf}
 \caption{SLAM因子图}
 \label{fig3.3}
@@ -136,13 +133,12 @@ SLAM算法后端优化将SLAM看作最大后验估计问题，且大都采用因
 \subsection{基于直接法的LSD-SLAM}
 
 \subsubsection*{算法概述}
-LSD-SLAM是2014年慕尼黑工业大学的J.Engle等人提出的基于直接法的SLAM算法，无需计算图像特征点，通过直接法的像素关联估计运动状态，构建半稠密地图——半稠密是指估计灰度梯度明显区域的像素位置。该算法可以在大尺度环境下实时运行，利用半稠密像素关联和关键帧pose图构建全局一致的地图，关键帧间的pose图使用相似变换$\mathfrak{sim}(3)$代替$\mathfrak{se}(3)$，从而在后端优化中可以考虑不同场景的尺度变化，减小尺度漂移。LSD-SLAM的算法流程如图\ref{fig3.4}所示
+LSD-SLAM是2014年慕尼黑工业大学的J.Engle等人提出的基于直接法的SLAM算法，无需计算图像特征点，通过直接法的像素关联估计运动状态，构建半稠密地图——半稠密是指估计灰度梯度明显区域的像素位置。该算法可以在大尺度环境下实时运行，利用半稠密像素关联和关键帧pose图构建全局一致的地图，关键帧间的pose图使用相似变换$\mathfrak{sim}(3)$代替$\mathfrak{se}(3)$，从而在后端优化中可以考虑不同场景的尺度变化，减小尺度漂移。LSD-SLAM的算法流程\upcite{[1.21]}如图\ref{fig3.4}所示
 
 \begin{figure}[h]
 \centering
-%\includegraphics[scale=0.35]{figures/Fig3.4.png}
 \includegraphics[scale=0.5,angle=-90]{figures/Fig3-4.pdf}
-\caption{LSD-SLAM算法流程图\upcite{[1.21]}}
+\caption{LSD-SLAM算法流程图}
 \label{fig3.4}
 \end{figure}
 
@@ -170,7 +166,6 @@ u_2 \cr v_2 \cr 1 \cr
 
 \begin{figure}
 \centering
-%\includegraphics[scale=0.5]{figures/Fig3.5.png}
 \includegraphics[scale=0.3,angle=-90]{figures/Fig3-5.pdf}
 \caption{直接法示意图}
 \label{fig3.5}
@@ -240,13 +235,12 @@ ${\partial \boldsymbol{q} / \partial \delta \boldsymbol{\xi}}$表示相机2坐�
 \subsection{基于特征的ORB-SLAM}
 
 \subsubsection*{算法概述}
-ORB-SLAM算法是Ra\'u l等人于2015年提出的基于特征的单目SLAM算法，是当前SLAM中最为完整和易用的SLAM系统。通过多线程保证整个算法实时运行，可应用于不同尺度大小的室内和室外场景，并且对于剧烈运动有较好的鲁棒性。整个系统围绕ORB特征\upcite{[3.8]}，包括视觉里程计和回环检测中的ORB字典\upcite{[3.9]}。并对特征点进行优化，如在OpenCV特征提取基础上保证特征点均匀分布，宽松的关键帧建立机制和严苛的关键帧筛选机制，循环优化4遍相机位姿以得到更多的匹配。以上改进和优化使得ORB-SLAM具有很好的鲁棒性，代表了当前基于特征的SLAM算法的最高水平，ORB-SLAM算法结构如图\ref{fig3.6}所示。
+ORB-SLAM算法是Ra\'u l等人于2015年提出的基于特征的单目SLAM算法，是当前SLAM中最为完整和易用的SLAM系统。通过多线程保证整个算法实时运行，可应用于不同尺度大小的室内和室外场景，并且对于剧烈运动有较好的鲁棒性。整个系统围绕ORB特征\upcite{[3.8]}，包括视觉里程计和回环检测中的ORB字典\upcite{[3.9]}。并对特征点进行优化，如在OpenCV特征提取基础上保证特征点均匀分布，宽松的关键帧建立机制和严苛的关键帧筛选机制，循环优化4遍相机位姿以得到更多的匹配。以上改进和优化使得ORB-SLAM具有很好的鲁棒性，代表了当前基于特征的SLAM算法的最高水平，ORB-SLAM算法结构\upcite{[1.20]}如图\ref{fig3.6}所示。
 
 \begin{figure}[h]
 \centering
-%\includegraphics[scale=0.5]{figures/Fig3.6.png}
 \includegraphics[scale=0.5,angle=-90]{figures/Fig3-6.pdf}
-\caption{ORB-SLAM算法流程图\upcite{[1.20]}}
+\caption{ORB-SLAM算法流程图}
 \label{fig3.6}
 \end{figure}
 
@@ -273,7 +267,6 @@ ORB特征由关键点和描述子组成，其关键点称为"Oriented FAST"，FA
 
 \begin{figure}[h]
 \centering
-%\includegraphics[scale=0.5]{figures/Fig3.7.png}
 \includegraphics[scale=0.3,angle=-90]{figures/Fig3-7.pdf}
 \caption{对极几何约束}
 \label{fig3.7}
@@ -351,7 +344,7 @@ R\!M\!S\!E(\boldsymbol{F}) &\doteq \left( {1 \over n} \sum\limits_{i=1}^n \left 
 \begin{table}[h]		%表格环境
 % \multicolumn是跨列功能，第一个参数2，表示跨两列，第二个参数c|，表示文字置中，并在栏位右边画一条直线框，最后一个参数即是要填入的文字
 %\multirow是跨行功能，第一个参数2，表示跨两行，第二个参数*，表示系统自动调整文字，最后一个参数即是要填入的文字
-\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}		%单元格内容强制换行
+%\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}		%单元格内容强制换行
 \renewcommand\arraystretch{1.5}		%增加行间距
 \centering
 \caption{TUM数据集单目SLAM算法轨迹定位精度}   % 表格标题，在表格内容之前
