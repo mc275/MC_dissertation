@@ -31,7 +31,17 @@
 
 
 \begin{englishabstract}
+In recent years, the UAV technology developed rapidly. The traditional navigation methods exist limitations of application scenarios and localization accuracy. Thus, they cannot supply the demand of navigation and localization for UAV. Simultaneous localization and mapping using monocular vision can locate and reconstruct the enviroment simultaneously.  
+As a popular sensor for vision SLAM, monocular camera has the advantages of simple structure and high computational efficiency. It's suitable for large-scale and variable-scale environment for UAV. This paper mainly focuses on the monocular vision SLAM and studies the navigation and localization system for UAV, including:
 
+Firstly, the mathematical model of multirotor UAV is studied. According to the assumption of linearization, the kinematics and dynamics model of UAV is simplified. The simulation of UAV  kinematics is made to facilitate the subsequent analysis and selection of UAV navigation and localization visual SLAM.
+
+Secondly, the framework of SLAM, algorithm theory and classification is studied. In that chapter, we compared the LSD-SLAM based on direct method with feature-based ORB-SLAM from localization accuracy, robustness and map reconstruction. The experiment results show that ORB-SLAM has higher localization accuracy and robustness. It's suitable for UAV navigation and localization system. However, ORB-SLAM also has some problems which are map sparse and scale ambiguous. It can not be applied for the UAV navigation and localization.
+
+Then, a feature-based monocular semi-dense SLAM algorithm is studied for solving map sparse. With reference to the direct method SLAM reconstruction principle, semi-dense map of the environment is reconstructed by pixel block matching and inverse depth hypothesis. In view of the problem that feature-based SLAM has more outliers under the wide baseline matching, that chapter researchs the intra-keyframe and inter-keyframe outlier detection mechanism. It is significant to improve the reconstruction effect of semi-dense map. The 
+experiment results show that the feature-based monocular semi-dense SLAM has high localization accuracy and robustness. The environment of semi-dense map can supply the demands of obstacle avoidance and path planning for UAV.
+
+Finally, in view of the problem that monocular SLAM has scale ambiguous. The inertial-vision SLAM algorithm using IMU preintegration is studied. IMU data is processed by preintegration algorithm and get suitable IMU observation model for maximum a posteriori.  Through nonlinear optimization, the monocular SLAM back-end can confused the IMU Data with SLAM statement. The experiment results show that the inertial-vision SLAM algorithm using IMU preintegration can solve scale ambiguous, and has high localization accuracy and robustness. 
   
 \englishkeywords{UAV; SLAM; monocular; semi-dense; multi-sensor fusion}
 
