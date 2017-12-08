@@ -520,7 +520,7 @@ footskip=0.7cm% 页脚 1.8cm %
 
     {\heiti\zihao{3}
      \begin{tabular}{l p{3mm} c}
-      {\heiti\zihao{-2} \BIT@label@author} & &\BITunderline[180pt] {\heiti\zihao{-2} {\BIT@value@author}}
+      {\heiti\zihao{3} \BIT@label@author} & &\BITunderline[180pt] {\heiti\zihao{-2} {\BIT@value@author}}
     \\
       \BIT@label@institute & & \BITunderline[180pt]{\BIT@value@institute}
     \\
@@ -534,7 +534,7 @@ footskip=0.7cm% 页脚 1.8cm %
     \\
       \BIT@label@school & &   \BITunderline[180pt]{\BIT@value@school}
     \\
-    {\songti\zihao{4} \BIT@label@defenddate} & &  \BITunderline[180pt] {\songti\zihao{4} {\BIT@value@defenddate}}
+    {\heiti\zihao{3} \BIT@label@defenddate} & &  \BITunderline[180pt] {\songti\zihao{4} {\BIT@value@defenddate}}
     \end{tabular}}
 
   \end{center}
@@ -591,7 +591,7 @@ footskip=0.7cm% 页脚 1.8cm %
     \\
       \BIT@label@englishschool &     \BITunderline[270pt]{\BIT@value@englishschool}
     \\
-    {\zihao{4} \BIT@label@englishdate} &   \BITunderline[270pt]{\zihao{-3}{\BIT@value@englishdate}}
+    {\zihao{-3} \BIT@label@englishdate} &   \BITunderline[270pt]{\zihao{4}{\BIT@value@englishdate}}
     \end{tabular}}
 
   \end{center}

@@ -56,7 +56,7 @@ P(\mathcal{X}_k | Z_k) & \varpropto P(\mathcal{X}_0)P(Z_k | \mathcal{X}_k) = P(\
 & = \argmin\limits_{\mathcal{X}_k} \left\Vert \boldsymbol{r}_0 \right\Vert_{\boldsymbol{\Sigma}_0}^2+ \sum\limits_{(i,j) \in \mathcal{K}_k}\left\Vert \boldsymbol{r}_{\mathcal{I}_{ij}} \right\Vert_{\boldsymbol{\Sigma}_{ij}}^2+ \sum\limits_{i \in \mathcal{K}_k}\sum\limits_{l \in \mathcal{C}_i} \left\Vert \boldsymbol{r}_{C_{il}} \right\Vert_{\boldsymbol{\Sigma}_{C}}^2
 \end{aligned}
 \end{equation}
-其中$\boldsymbol{r}_0$，$ \boldsymbol{r}_{\mathcal{I}_{ij}}$，$\boldsymbol{r}_{C_{il}}$表示与测量值有关的残差，残差是关于状态变量$\mathcal{X}_k$的方程，用于表示真实测量值与在状态变量$\mathcal{X}_k$给定情况下预测观测值之间的误差，$\boldsymbol{\Sigma}_0$，$ \boldsymbol{\Sigma}_{ij}$，$\boldsymbol{\Sigma}_C$表示残差对应的协方差矩阵。公式\eqref{equ5.4}将惯性-视觉SLAM问题抽象为关于状态变量$\mathcal{X}_k$的最优估计问题，本章之后的内容介绍如何构建最优估计的目标函数和协方差矩阵,将IMU数据耦合到原有的视觉SLAM后端优化框架中。
+其中$\boldsymbol{r}_0$，$ \boldsymbol{r}_{\mathcal{I}_{ij}}$，$\boldsymbol{r}_{C_{il}}$表示与测量值有关的残差，残差是关于状态变量$\mathcal{X}_k$的函数，用于表示实际测量值与在状态变量$\mathcal{X}_k$给定情况下预测观测值之间的误差，$\boldsymbol{\Sigma}_0$，$ \boldsymbol{\Sigma}_{ij}$，$\boldsymbol{\Sigma}_C$表示残差对应的协方差矩阵。公式\eqref{equ5.4}将惯性-视觉SLAM问题抽象为关于状态变量$\mathcal{X}_k$的最优估计问题，本章之后的内容介绍如何构建最优估计的目标函数和协方差矩阵,将IMU数据耦合到原有的视觉SLAM后端优化框架中。
 
 
 %5.2
@@ -114,7 +114,7 @@ P(\mathcal{X}_k | Z_k) & \varpropto P(\mathcal{X}_0)P(Z_k | \mathcal{X}_k) = P(\
 为了表示方便，省略方程\eqref{equ5.9}状态变量的坐标系下标。在速度和位置的数值积分中，假设两次测量之间的旋转矩阵$R(t)$为常量，虽然方程\eqref{equ5.9}不是方程\eqref{equ5.7}的精确解，但在IMU采样频率较高时可以认为近似精度足够高，因而在实际应用中采用以上模型近似求解。如果IMU采样速率较低，可以考虑采用更为准确的数值积分近似方法。
 
 \subsection{IMU预积分观测模型}
-方程\eqref{equ5.9}可以作为\eqref{equ5.4}最大后验估计约束，但其中包含需要频繁更新的状态变量。此外，方程\eqref{equ5.9}中涉及到时间$t$和$t+\Delta t$的状态，因此在每次获得新的IMU测量时需要增加状态变量。针对以上问题，采用IMU预积分算法，将连续两帧关键帧之间的所有IMU观测数据整合为包含运动状态的观测方程，IMU预积分示意图如图\ref{fig5.2}所示。
+方程\eqref{equ5.9}可以作为\eqref{equ5.4}的最大后验估计约束，但其中包含需要频繁更新的状态变量。此外，方程\eqref{equ5.9}中涉及到时间$t$和$t+\Delta t$的状态，因此在每次获得新的IMU测量时需要增加状态变量。针对以上问题，采用IMU预积分算法，将连续两帧关键帧之间的所有IMU观测数据整合为包含运动状态的观测方程，IMU预积分示意图如图\ref{fig5.2}所示。
 
 \begin{figure}[h]
 \centering
@@ -122,6 +122,7 @@ P(\mathcal{X}_k | Z_k) & \varpropto P(\mathcal{X}_0)P(Z_k | \mathcal{X}_k) = P(\
 \caption{IMU预积分示意图}
 \label{fig5.2}
 \end{figure}
+
 
 假设IMU测量数据与相机图像经过同步处理，对两连续关键帧$i$与$j$之间的所有采样间隔$\Delta t$上的IMU测量数据通过方程\eqref{equ5.9}进行迭代，可以得到
 \begin{equation}
@@ -237,7 +238,7 @@ P(\mathcal{X}_k | Z_k) & \varpropto P(\mathcal{X}_0)P(Z_k | \mathcal{X}_k) = P(\
 
 
 \subsection{IMU偏移估计与预积分补偿}
-在上文中，假设IMU传感器偏移量${\bar{\boldsymbol{b}}^a, \bar{\boldsymbol{b}}^g}$为常量。然而，在实际情况下IMU传感器的偏移在状态估计与优化过程中是变化的，因而需要估计IMU传感器的偏移$\boldsymbol{b}_i^g$、$\boldsymbol{b}_i^a$。对于IMU传感器的偏移的变化，使用"布朗运动"进行建模，有
+在上文中，假设IMU传感器偏移量${\bar{\boldsymbol{b}}^a, \bar{\boldsymbol{b}}^g}$为常量。然而，在实际情况下IMU传感器的偏移在状态估计与优化过程中是变化的，因而需要估计IMU传感器的偏移$\boldsymbol{b}_i^g$、$\boldsymbol{b}_i^a$。对于IMU传感器的偏移变化，使用“布朗运动”进行建模，有
 \begin{equation}
 \label{equ5.22}
 \dot{\boldsymbol{b}}^g(t) = \boldsymbol{\eta}^{bg}, \ \ \ \dot{\boldsymbol{b}}^a(t) = \boldsymbol{\eta}^{ba}
@@ -253,7 +254,7 @@ P(\mathcal{X}_k | Z_k) & \varpropto P(\mathcal{X}_0)P(Z_k | \mathcal{X}_k) = P(\
 \left\Vert \boldsymbol{r}_{\boldsymbol{b}_{ij}} \right\Vert ^2 \doteq \left\Vert \boldsymbol{b}_j^g -\boldsymbol{b}_i^g \right\Vert_{\boldsymbol{\Sigma}^{bgd}}^2 + \left\Vert \boldsymbol{b}_j^a -\boldsymbol{b}_i^a \right\Vert_{\boldsymbol{\Sigma}^{bad}}^2
 \end{equation}
 
-当某时刻IMU传感器偏移$\boldsymbol{b}_g$，$\boldsymbol{b}_a$更新后，原有的IMU预积分结果会发生变化。一般的处理方法是使用更新后的IMU传感器偏移重新计算预积分，但这增加算法的复杂性。另一种做法是根据偏移的变化$\boldsymbol{b} \leftarrow \bar{\boldsymbol{b}}+\delta \boldsymbol{b}$，使用李群与李代数性质(见附录A)更新IMU预积分值
+当某时刻IMU传感器偏移$\boldsymbol{b}_g$、$\boldsymbol{b}_a$更新后，原有的IMU预积分结果会发生变化。一般的处理方法是使用更新后的IMU传感器偏移重新计算预积分，但这增加了算法的复杂性。另一种做法是根据偏移的变化$\boldsymbol{b} \leftarrow \bar{\boldsymbol{b}}+\delta \boldsymbol{b}$，使用李群与李代数性质(见附录A)更新IMU预积分值
 \begin{equation}
 \label{equ5.25}
 \begin{aligned}
@@ -296,9 +297,9 @@ P(\mathcal{X}_k | Z_k) & \varpropto P(\mathcal{X}_0)P(Z_k | \mathcal{X}_k) = P(\
 
 %5.3
 \section{惯性-视觉单目SLAM初始化}
-本节研究惯性-视觉单目SLAM初始化,通过单目SLAM获取的关键帧位姿和IMU测量数据\upcite{[5.3]}，估计单目SLAM算法轨迹的尺度，重力加速度方向，运动速度和IMU传感器的偏移。本算法需要单目SLAM运行一段时间，并假设在此运行期间的所有状态变量是可观的。本文研究的惯性-视觉单目SLAM初始化可以用于任何关键帧在时间上连续的SLAM算法。
+本节研究惯性-视觉单目SLAM初始化,通过单目SLAM获取的关键帧位姿和IMU测量数据\upcite{[5.3]}，估计单目SLAM算法轨迹的尺度，重力加速度方向，运动速度和IMU传感器偏移的初值。本算法需要单目SLAM运行一段时间，并假设在此运行期间的所有状态变量是可观的。本文研究的惯性-视觉单目SLAM初始化可以用于任何关键帧在时间上连续的SLAM算法。
 
-惯性-视觉单目SLAM的初始化可以分解为以下几步：陀螺仪偏移估计；假设加速度计偏移为0的情况下，尺度与重力加速度估计；加速度计偏移估计与尺度、重力加速度优化；速度估计。
+惯性-视觉单目SLAM的初始化可以分解为以下4步：陀螺仪偏移估计；假设加速度计偏移为0的情况下，尺度与重力加速度估计；加速度计偏移估计与尺度、重力加速度优化；速度估计。
 
 \subsection{陀螺仪偏移估计}
 根据单目SLAM连续两帧关键帧的姿态，可以估计陀螺仪偏移。假设陀螺仪偏移在估计时间内保持不变，可以通过最小化单目SLAM连续两帧关键帧之间相对姿态和陀螺仪的积分偏差，估计陀螺仪偏移$b_g$。
@@ -310,15 +311,15 @@ P(\mathcal{X}_k | Z_k) & \varpropto P(\mathcal{X}_0)P(Z_k | \mathcal{X}_k) = P(\
 
 
 \subsection{尺度与重力加速度估计}
-完成陀螺仪偏移估计后，可以在IMU的速度预积分与位置预积分方程中增加陀螺仪偏移更新补偿。由于单目视觉SLAM估计轨迹的尺度不确定，因而从相机坐标系$C$到IMU坐标系$B$的坐标变换含有尺度因子$s$，设当前关键帧的位姿为$[\boldsymbol{R}_{WC},\boldsymbol{t}_{WC}]$：
+完成陀螺仪偏移估计后，可以在IMU的速度预积分与位置预积分方程中增加陀螺仪偏移更新补偿。由于单目视觉SLAM估计轨迹的尺度不确定，因而从相机坐标系$C$到IMU坐标系$B$的坐标变换含有尺度因子$s$，设当前关键帧的位姿为$[\boldsymbol{R}_{WC},\boldsymbol{p}_{WC}]$：
 \begin{equation}
 \label{equ5.29}
-\boldsymbol{P}_{W\!B} = \boldsymbol{R}_{WC}\ \boldsymbol{P}_{CB} + s\ \boldsymbol{t}_{WC} 
+\boldsymbol{P}_{W\!B} = \boldsymbol{R}_{WC}\ \boldsymbol{P}_{CB} + s\ \boldsymbol{p}_{WC} 
 \end{equation}
 将方程\eqref{equ5.29}带入方程\eqref{equ5.10},忽略加速度计偏移，可以得到
 \begin{equation}
 \label{equ5.30}
-s\ \boldsymbol{t}_{WC}^{i+1} = s\ \boldsymbol{t}_{WC}^i + \boldsymbol{v}_{W\!B}^i \Delta t_{i,i+1}+{1 \over 2} \boldsymbol{g}_W \Delta t_{i,i+1}^2 + \boldsymbol{R}_{W\!B}^i \Delta  \widetilde{\boldsymbol{p}}_{i,i+1} + \left(\boldsymbol{R}_{WC}^i-\boldsymbol{R}_{WC}^{i+1} \right) P_{CB}
+s\ \boldsymbol{p}_{WC}^{i+1} = s\ \boldsymbol{p}_{WC}^i + \boldsymbol{v}_{W\!B}^i \Delta t_{i,i+1}+{1 \over 2} \boldsymbol{g}_W \Delta t_{i,i+1}^2 + \boldsymbol{R}_{W\!B}^i \Delta  \widetilde{\boldsymbol{p}}_{i,i+1} + \left(\boldsymbol{R}_{WC}^i-\boldsymbol{R}_{WC}^{i+1} \right) P_{CB}
 \end{equation}
 为了降低求解线性方程\eqref{equ5.30}的复杂性，避免求解速度变量，使用方程\eqref{equ5.30}表示三个连续关键帧之间的关系并与方程组\eqref{equ5.16}中的速度预积分方程联立，可以得到
 \begin{equation}
@@ -336,7 +337,7 @@ s \cr
 \begin{equation}
 \label{equ5.32}
 \begin{aligned}
-\boldsymbol{\lambda}(i) &= \left( \boldsymbol{t}_{WC}^{i+1}-\boldsymbol{t}_{WC}^i \right) \Delta t_{i+1,i+2} - \left( \boldsymbol{t}_{WC}^{i+2}-\boldsymbol{t}_{WC}^{i+1} \right)\Delta t_{i,i+1} 
+\boldsymbol{\lambda}(i) &= \left( \boldsymbol{p}_{WC}^{i+1}-\boldsymbol{p}_{WC}^i \right) \Delta t_{i+1,i+2} - \left( \boldsymbol{p}_{WC}^{i+2}-\boldsymbol{p}_{WC}^{i+1} \right)\Delta t_{i,i+1} 
 \\ 
 \boldsymbol{\beta} (i) &= {1 \over 2} \boldsymbol{I}_{3 \times 3} \left( \Delta t_{i,i+1}^2 \Delta t_{i+1,i+2} + \Delta t_{i+1,i+2}^2 \Delta t_{i,i+1} \right) 
 \\ 
@@ -390,7 +391,7 @@ s \cr
 \begin{equation}
 \label{equ5.37}
 \begin{aligned}
-s \ \boldsymbol{t}_{WC}^{i+1} &= s \ \boldsymbol{t}_{WC}^i +  \boldsymbol{v}_{W\!B}^i \Delta \boldsymbol{t}_{i,i+1} 
+s \ \boldsymbol{p}_{WC}^{i+1} &= s \ \boldsymbol{p}_{WC}^i +  \boldsymbol{v}_{W\!B}^i \Delta \boldsymbol{t}_{i,i+1} 
 - { 1 \over 2} \boldsymbol{R}_{W\!I} \hat{\boldsymbol{g}}_I^{\wedge}G \Delta t_{i,i+1}^2  \delta \boldsymbol{\theta} 
 \\
 & + \boldsymbol{R}_{W\!B}^i \left( \Delta \widetilde{\boldsymbol{p}}_{i,i+1} + {\partial \Delta \bar{\boldsymbol{p}}_{ij} \over \partial \boldsymbol{b}^a } \boldsymbol{b}_a  \right) +\left( \boldsymbol{R}_{WC}^i - \boldsymbol{R}_{WC}^{i+1} \right) \boldsymbol{P}_{CB} 
@@ -430,11 +431,11 @@ s \cr \delta \boldsymbol{\theta}_{xy} \cr \boldsymbol{b}_a \cr
 \subsection{速度估计与重定位后的IMU偏移估计}
 由方程\eqref{equ5.30}，\eqref{equ5.37}求解尺度，重力加速度和IMU加速度计偏移时，通过三个连续关键帧之间的关系消去了速度变量。在进行速度估计时，可以利用已知的尺度，重力加速度和IMU加速度计偏移，直接带入方程\eqref{equ5.37}求解关键帧的速度状态$\boldsymbol{v}_{W\!B}^i$。
 
-当算法运行过程中发生跟踪丢失，经过一段时间重定位成功后，由于IMU传感器偏移发生变化，需要重新估计当前IMU传感器偏移。首先可通过方程\eqref{equ5.28}估计陀螺仪偏移$\boldsymbol{b}_g$。估计加速度计偏移时，由于轨迹尺度$s$和重力加速度$\boldsymbol{g}_W$已知且不变，因而只需要带入方程\eqref{equ5.38}即可。
+当SLAM运行过程中发生跟踪丢失，经过一段时间重定位成功后，由于IMU传感器偏移发生变化，需要重新估计当前IMU传感器偏移。首先可通过方程\eqref{equ5.28}估计陀螺仪偏移$\boldsymbol{b}_g$。估计加速度计偏移时，由于轨迹尺度$s$和重力加速度$\boldsymbol{g}_W$已知且不变，因而只需要带入方程\eqref{equ5.38}即可。
 
 
 \section{实验}
-为了对本章研究的基于IMU预积分的惯性-视觉单目SLAM算法进行评估，本节从IMU初始化情况和轨迹定位精度两个方面设计实验。IMU初始化实验主要用于测试算法在初始化阶段估计的IMU状态变量收敛程度和处理时间的增长速度；定位精度实验主要测试算法轨迹估计的尺度准确性和轨迹误差。本节实验在公开数据集EuRoC\upcite{[5.4]}上进行，EuRoC提供了11组无人机飞行数据序列，每组数据提供采样频率$20$Hz的双目图像，采样频率为$200$Hz的IMU数据，且根据环境光照、纹理，运动速度和模糊情况将11组数据序列分为简单，中等和困难三种，并对每个飞行数据序列提供准确的真实飞行轨迹。本节实验实时运行在处理器$i7-4720$，内存$8G$的笔记本计算机上。
+为了对本章研究的基于IMU预积分的惯性-视觉单目SLAM算法进行评估，本节从IMU初始化情况和轨迹定位精度两个方面设计实验。IMU初始化实验主要用于测试算法在初始化阶段估计的IMU状态变量收敛情况和处理时间的增长速度；定位精度实验主要测试算法轨迹估计的尺度准确性和轨迹误差。本节实验在公开数据集EuRoC\upcite{[5.4]}上进行，EuRoC提供了11组无人机飞行数据序列，每组数据提供采样频率$20$Hz的双目图像，采样频率为$200$Hz的IMU数据，且根据环境光照、纹理，运动速度和模糊情况将11组数据序列分为简单，中等和困难三种，并对每个飞行数据序列提供准确的真实飞行轨迹。本节实验实时运行在处理器$i7-4720$，内存$8G$的笔记本计算机上。
 
 \subsection{IMU初始化}
 为了评估基于IMU预积分的惯性-视觉单目SLAM的初始化算法的有效性，在EuRoC数据集MH\_ 02\_ easy飞行序列上进行测试。为了保证在IMU初始化时观测到所有变量，惯性-视觉单目SLAM算法需要运行一段时间，在运行时间内重复执行多次IMU初始化，每次初始化使用惯性-视觉单目SLAM地图中的所有关键帧。图\ref{fig5.3}展示IMU初始化算法估计的IMU传感器偏移量、轨迹尺度和处理时间。从图中可以看出，在$10-15$s后初始化算法估计的状态变量基本收敛。图\ref{fig5.3-d}表示IMU初始化算法求解状态变量的线性方程\eqref{equ5.39}的条件数的变化趋势，可以发现经过一段时间条件数收敛到较小值，估计加速度计偏移的方程病态程度低。在图\ref{fig5.3-e}中初始化算法处理时间近似线性增长，相比于同时估计所有状态变量\upcite{[5.5]}，对需要初始化的状态进行分步估计可以有效提高计算效率。
@@ -472,7 +473,7 @@ s \cr \delta \boldsymbol{\theta}_{xy} \cr \boldsymbol{b}_a \cr
           
 
 \subsection{定位精度}
-本节实验测试本章研究的基于IMU预积分的惯性-视觉单目SLAM算法在EuRoC中的6个飞行序列上的尺度估计准确性和定位精度，设置IMU初始化时间为$15s$，在IMU初始化成功之后会进行一次全局BA。表\ref{tab5.1}展示本文的惯性-视觉单目SLAM算法在6个数据集上的绝对轨迹的均方根误差(RMSE)和真实轨迹与估计轨迹对齐后的尺度值。
+本实验测试本章研究的基于IMU预积分的惯性-视觉单目SLAM算法在EuRoC中的6个飞行序列上的尺度估计准确性和定位精度，设置IMU初始化时间为$15s$，在IMU初始化成功之后会进行一次全局BA。表\ref{tab5.1}展示本文的惯性-视觉单目SLAM算法在6个数据集上的绝对轨迹的均方根误差(RMSE)和真实轨迹与估计轨迹对齐后的尺度值。
 
 \begin{table}[h]	%表格环境
 %\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}		%单元格内容强制换行
@@ -494,7 +495,7 @@ s \cr \delta \boldsymbol{\theta}_{xy} \cr \boldsymbol{b}_a \cr
 	\end{tabular*}
 \end{table}
 
-通过实验结果可以发现，除EuRoc飞行序列V1\_ 03\_ difficult外，本文研究的基于IMU预积分的惯性-视觉单目SLAM算法在不同难度的测试数据上均可正常运行，且轨迹估计的尺度误差小于$1\%$。飞行序列V1\_ 03\_ difficult则是由于运动过于剧烈导致单目SLAM无法正常初始化。对于面积在$30 m^2$左右的室内环境定位精度小于$3cm$；对于面积在$300m^2$左右的工厂环境定位精度小于$10cm$，飞行轨迹图见附录\ref{traj_plot}所示。
+通过实验结果可以发现，除EuRoc飞行序列V1\_ 03\_ difficult外，本文研究的基于IMU预积分的惯性-视觉单目SLAM算法在不同难度的数据上均可正常运行，且轨迹估计的尺度误差小于$1\%$。飞行序列V1\_ 03\_ difficult则是由于运动过于剧烈导致单目SLAM无法正常初始化。对于面积在$30 m^2$左右的室内环境定位精度小于$3cm$；对于面积在$300m^2$左右的工厂环境定位精度小于$10cm$，飞行轨迹图见附录\ref{traj_plot}所示。
 
 图\ref{fig5.4}展示了在EuRoC飞行序列MH\_ 03\_ medium上，本章研究的基于IMU预积分的惯性-视觉单目SLAM算法与开源惯性-视觉算法OKVIS的轨迹精度比较。图\ref{fig5.4-a}表示轨迹绝对精度的箱型图，从图中可以看出，相比于OKVIS本章研究的算法定位精度较高；图\ref{fig5.4-b}表示轨迹误差分布的直方图，从图中可以看出本文研究的基于IMU预积分的惯性-视觉单目SLAM算法轨迹误差波动范围小，估计的轨迹精度一致性好。
 
@@ -517,7 +518,7 @@ s \cr \delta \boldsymbol{\theta}_{xy} \cr \boldsymbol{b}_a \cr
 
 
 \section{本章小结}
-本章研究基于IMU预积分的惯性-视觉单目SLAM算法，在传统基于特征的单目算法基础上，利用预积分算法对IMU数据进行处理，将IMU观测模型表示为状态变量的函数与观测噪声和的形式，通过单目SLAM后端非线性优化与IMU进行数据融合。实验表明，本章研究的基于IMU预积分的惯性-视觉单目SLAM算法在IMU初始化阶段可以准确估计运动轨迹尺度和传感器偏移，定位精度高；IMU先验运动信息还可加速特征跟踪和匹配，提高算法鲁棒性。
+本章研究基于IMU预积分的惯性-视觉单目SLAM算法，在传统基于特征的单目算法基础上，利用预积分算法对IMU数据进行处理，将IMU观测模型表示为状态变量的函数与观测噪声和的形式，通过单目SLAM后端非线性优化与IMU进行数据融合。实验表明，本章研究的基于IMU预积分的惯性-视觉单目SLAM算法在IMU初始化阶段可以准确估计运动轨迹尺度和传感器偏移；整个算法定位精度高，IMU先验运动信息还可加速特征跟踪和匹配，提高算法鲁棒性。
 
 
 
