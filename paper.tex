@@ -45,23 +45,23 @@
 \author{孟超}
 \institute{宇航学院}
 \advisor{郭百巍副教授}
-\chairman{徐勇副教授}
+\chairman{林蔚研究员}
 \degree{工学硕士}
 \major{航空宇航科学与技术}
 \school{北京理工大学}
-\defenddate{2017年12月}
+\defenddate{2018年1月}
 \studentnumber{2120150068}
 
 % 英文封面内容(关注内容而不是表现形式)
 \englishtitle{UAV Simultaneous Localization and Mapping\\Using Monocular Vision}
 \englishauthor{Chao Meng}
 \englishadvisor{Prof. Baiwei Guo}
-\englishchairman{Prof. Yong Xu}
+\englishchairman{Prof. Wei Lin}
 \englishschool{BEIJING INSTITUTE OF TECHNOLOGY}
 \englishinstitute{School of Aerospace Engineering}
 \englishdegree{Master of Science}
 \englishmajor{Aerospace Science and Technology}
-\englishdate{12,\ 2017}
+\englishdate{1,\ 2018}
 
 % 封面,这个命令实现了形式，具体见.cls
 \maketitle
@@ -89,11 +89,13 @@
 % 加入目录
 \tableofcontents
 
+\let\origaddvspace\addvspace
+\renewcommand{\addvspace}[1]{}
 % 加入表格索引
 \listoftables
-
 % 加入插图索引
 \listoffigures
+\renewcommand{\addvspace}[1]{\origaddvspace{#1}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 正主体部分

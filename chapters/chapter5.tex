@@ -73,7 +73,7 @@ P(\mathcal{X}_k | Z_k) & \varpropto P(\mathcal{X}_0)P(Z_k | \mathcal{X}_k) = P(\
 \end{equation}
 其中$\boldsymbol{\omega}_{W\!B}(t) \in \mathds{R}^3$表示在IMU坐标系下IMU坐标系相对于世界坐标系的旋转角速率，$\boldsymbol{a}_W(t) \in \mathds{R}^3$表示在世界坐标系下测量的加速度，$\boldsymbol{R}_{W\!B}$表示从IMU坐标系到世界坐标的旋转矩阵。
 
-为了获取IMU测量的运动信息，由刚体动力学模型可知
+为了获取IMU测量的运动信息，由刚体运动学模型可知
 \begin{equation}
 \label{equ5.6}
 \begin{aligned}
@@ -351,7 +351,7 @@ s \cr
 
 
 \subsection{加速度计偏移估计}
-在之前估计尺度和重力加速度的初始化过程中，忽略了IMU加速度计偏移，现在需要估计加速度计偏移。在估计加速度偏移时，由于之前重力加速度估计的不确定性，如果仅仅在方程\eqref{equ5.31}引入加速度计偏移则有可能导致线性方程组病态。为了得到准确的加速度计偏移，引入实际环境重力加速度大小$G$。假设在惯性坐标系$I$下重力加速度方向为$\boldsymbol{g}_I^{\wedge}= { \begin{bmatrix} 0 & 0 & -1 \cr  \end{bmatrix} ^T }$，上一节中计算得到的世界坐标系下的重力加速方向为$\hat{\boldsymbol{g}}_W = \boldsymbol{g}_W^* / \left\Vert \boldsymbol{g}_W^* \right\Vert$, 可以得到惯性坐标系到世界坐标系的旋转矩阵
+在之前估计尺度和重力加速度的初始化过程中，忽略了IMU加速度计偏移，现在需要估计加速度计偏移。在估计加速度偏移时，由于之前重力加速度估计的不确定性，如果仅仅在方程\eqref{equ5.31}引入加速度计偏移则有可能导致线性方程组病态。为了得到准确的加速度计偏移，引入实际环境重力加速度大小$G$。假设在惯性坐标系$I$下重力加速度方向为$\hat{\boldsymbol{g}}_I= { \begin{bmatrix} 0 & 0 & -1 \cr  \end{bmatrix} ^T }$，上一节中计算得到的世界坐标系下的重力加速方向为$\hat{\boldsymbol{g}}_W = \boldsymbol{g}_W^* / \left\Vert \boldsymbol{g}_W^* \right\Vert$, 可以得到惯性坐标系到世界坐标系的旋转矩阵
 \begin{equation}
 \label{equ5.33}
 \begin{aligned}
@@ -391,12 +391,9 @@ s \cr
 \begin{equation}
 \label{equ5.37}
 \begin{aligned}
-s \ \boldsymbol{p}_{WC}^{i+1} &= s \ \boldsymbol{p}_{WC}^i +  \boldsymbol{v}_{W\!B}^i \Delta \boldsymbol{t}_{i,i+1} 
-- { 1 \over 2} \boldsymbol{R}_{W\!I} \hat{\boldsymbol{g}}_I^{\wedge}G \Delta t_{i,i+1}^2  \delta \boldsymbol{\theta} 
+s \ \boldsymbol{p}_{WC}^{i+1} &= s \ \boldsymbol{p}_{WC}^i +  \boldsymbol{v}_{W\!B}^i \Delta \boldsymbol{t}_{i,i+1} + \boldsymbol{R}_{W\!B}^i \left( \Delta \widetilde{\boldsymbol{p}}_{i,i+1} + {\partial \Delta \bar{\boldsymbol{p}}_{ij} \over \partial \boldsymbol{b}^a } \boldsymbol{b}_a  \right) 
 \\
-& + \boldsymbol{R}_{W\!B}^i \left( \Delta \widetilde{\boldsymbol{p}}_{i,i+1} + {\partial \Delta \bar{\boldsymbol{p}}_{ij} \over \partial \boldsymbol{b}^a } \boldsymbol{b}_a  \right) +\left( \boldsymbol{R}_{WC}^i - \boldsymbol{R}_{WC}^{i+1} \right) \boldsymbol{P}_{CB} 
-\\
-& + {1 \over 2} \boldsymbol{R}_{W\!I} \hat{\boldsymbol{g}}_I G \Delta t_{i,i+1}^2
+&+\left( \boldsymbol{R}_{WC}^i - \boldsymbol{R}_{WC}^{i+1} \right) \boldsymbol{P}_{CB} + {1 \over 2} \boldsymbol{R}_{W\!I} \hat{\boldsymbol{g}}_I G \Delta t_{i,i+1}^2- { 1 \over 2} \boldsymbol{R}_{W\!I} \hat{\boldsymbol{g}}_I^{\wedge}G \Delta t_{i,i+1}^2  \delta \boldsymbol{\theta}
 \end{aligned}
 \end{equation}
 使用方程\eqref{equ5.37}表示三个连续关键帧之间的关系并与方程组\eqref{equ5.31}联立,可以得到关于尺度$s$，重力加速度扰动$\delta \boldsymbol{\theta}$和IMU加速度计偏移$\boldsymbol{b}_a$的线性方程组
@@ -440,7 +437,7 @@ s \cr \delta \boldsymbol{\theta}_{xy} \cr \boldsymbol{b}_a \cr
 \subsection{IMU初始化}
 为了评估基于IMU预积分的惯性-视觉单目SLAM的初始化算法的有效性，在EuRoC数据集MH\_ 02\_ easy飞行序列上进行测试。为了保证在IMU初始化时观测到所有变量，惯性-视觉单目SLAM算法需要运行一段时间，在运行时间内重复执行多次IMU初始化，每次初始化使用惯性-视觉单目SLAM地图中的所有关键帧。图\ref{fig5.3}展示IMU初始化算法估计的IMU传感器偏移量、轨迹尺度和处理时间。从图中可以看出，在$10-15$s后初始化算法估计的状态变量基本收敛。图\ref{fig5.3-d}表示IMU初始化算法求解状态变量的线性方程\eqref{equ5.39}的条件数的变化趋势，可以发现经过一段时间条件数收敛到较小值，估计加速度计偏移的方程病态程度低。在图\ref{fig5.3-e}中初始化算法处理时间近似线性增长，相比于同时估计所有状态变量\upcite{[5.5]}，对需要初始化的状态进行分步估计可以有效提高计算效率。
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
        	  \subfigure[加速度计偏移]
        	  {
@@ -475,7 +472,10 @@ s \cr \delta \boldsymbol{\theta}_{xy} \cr \boldsymbol{b}_a \cr
 \subsection{定位精度}
 本实验测试本章研究的基于IMU预积分的惯性-视觉单目SLAM算法在EuRoC中的6个飞行序列上的尺度估计准确性和定位精度，设置IMU初始化时间为$15s$，在IMU初始化成功之后会进行一次全局BA。表\ref{tab5.1}展示本文的惯性-视觉单目SLAM算法在6个数据集上的绝对轨迹的均方根误差(RMSE)和真实轨迹与估计轨迹对齐后的尺度值。
 
-\begin{table}[h]	%表格环境
+通过实验结果可以发现，除EuRoc飞行序列V1\_ 03\_ difficult外，本文研究的基于IMU预积分的惯性-视觉单目SLAM算法在不同难度的数据上均可正常运行，且轨迹估计的尺度误差小于$1\%$。飞行序列V1\_ 03\_ difficult则是由于运动过于剧烈导致单目SLAM无法正常初始化。对于面积在$30 m^2$左右的室内环境定位精度小于$3cm$；对于面积在$300m^2$左右的工厂环境定位精度小于$10cm$，飞行轨迹图见附录\ref{traj_plot}所示。
+
+
+\begin{table}[H]	%表格环境
 %\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}		%单元格内容强制换行
 \renewcommand\arraystretch{1}		%增加行间距
 \centering
@@ -495,7 +495,6 @@ s \cr \delta \boldsymbol{\theta}_{xy} \cr \boldsymbol{b}_a \cr
 	\end{tabular*}
 \end{table}
 
-通过实验结果可以发现，除EuRoc飞行序列V1\_ 03\_ difficult外，本文研究的基于IMU预积分的惯性-视觉单目SLAM算法在不同难度的数据上均可正常运行，且轨迹估计的尺度误差小于$1\%$。飞行序列V1\_ 03\_ difficult则是由于运动过于剧烈导致单目SLAM无法正常初始化。对于面积在$30 m^2$左右的室内环境定位精度小于$3cm$；对于面积在$300m^2$左右的工厂环境定位精度小于$10cm$，飞行轨迹图见附录\ref{traj_plot}所示。
 
 图\ref{fig5.4}展示了在EuRoC飞行序列MH\_ 03\_ medium上，本章研究的基于IMU预积分的惯性-视觉单目SLAM算法与开源惯性-视觉算法OKVIS的轨迹精度比较。图\ref{fig5.4-a}表示轨迹绝对精度的箱型图，从图中可以看出，相比于OKVIS本章研究的算法定位精度较高；图\ref{fig5.4-b}表示轨迹误差分布的直方图，从图中可以看出本文研究的基于IMU预积分的惯性-视觉单目SLAM算法轨迹误差波动范围小，估计的轨迹精度一致性好。
 

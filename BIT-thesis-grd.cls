@@ -232,6 +232,12 @@ footskip=0.7cm% 页脚 1.8cm %
 \titlecontents{subsection}[4\ccwd]{\songti \zihao{-4}}
     {\thecontentslabel\hspace{\ccwd}}{}
     {\hspace{.5em}\titlerule*{.}\contentspage}
+\titlecontents{figure}[0pt]{\songti\zihao{-4}}
+    {\figurename~\thecontentslabel\quad}{\hspace*{-1.5cm}}
+    {\hspace{.5em}\titlerule*{.}\contentspage}
+\titlecontents{table}[0pt]{\songti\zihao{-4}}
+    {\tablename~\thecontentslabel\quad}{\hspace*{-1.5cm}}
+    {\hspace{.5em}\titlerule*{.}\contentspage}
 
 %% 选择编译
 \RequirePackage{ifthen}

@@ -66,8 +66,8 @@ SLAM技术最早始于1985年\upcite{[1.7]}，在1986年至1990年期间R.Smith�
 	DSO\upcite{[1.25]}					&2016		&单目		&单目直接法，当前效果最好的直接法	\\
 	RTAB-MAP\upcite{[1.26]}				&2013		&双目/RGB-D	&较大场景的实用RGB-D SLAM			\\
 	RGB-D-SLAM-V2\upcite{[1.27]} 		&2014		&RGB-D		&完整的RGB-D稠密建图				\\
-	OKVIS\upcite{[1.28]}				&2015		&多目+IMU	&以优化融合为主的关键帧VIO			\\
-	ROVIO\upcite{[1.29]}				&2015		&单目+IMU	&EKF为融合为主的VIO				\\
+	OKVIS\upcite{[1.28]}				&2015		&多目+IMU	&以优化为主的关键帧VIO			\\
+	ROVIO\upcite{[1.29]}				&2015		&单目+IMU	&以EKF为主的VIO				\\
 	Kinection Fusion\upcite{[1.30]} 	&2011		&RGB-D		&RGB-D在线重建经典工作				\\
 	Elastic Fusion\upcite{[1.31]} 		&2015		&RGB-D		&RGB-D在线重建，效果较好			\\
 	Cartographer\upcite{[1.32]}			&2016		&激光		&支持回环的激光SLAM				\\
@@ -84,9 +84,7 @@ SLAM技术最早始于1985年\upcite{[1.7]}，在1986年至1990年期间R.Smith�
 \item SLAM的优化问题可以使用图模型或概率图描述，高效地处理回环检测。图模型的求解又能直接对应到BA问题中正规方程系数矩阵的稀疏结构，加速求解过程。
 \end{enumerate}
 
-如果将优化变量抽象成节点，把运动方程和观测方程引入的误差抽象成边，就能得到SLAM对应的图模型$\boldsymbol{G}=\lbrace \boldsymbol{V}, \boldsymbol{E} \rbrace$，称为图优化\upcite{[1.37]}。求解图模型就等同于求解SLAM问题，研究者们还开发了专用的图优化/因子图优化的工具\upcite{[1.37],[1.38]}，被广泛地应用于当前的SLAM系统中。
-
-\begin{figure}
+\begin{figure}[H]
     \centering
        	  \subfigure[]
        	  {
@@ -99,6 +97,8 @@ SLAM技术最早始于1985年\upcite{[1.7]}，在1986年至1990年期间R.Smith�
      \caption{视觉SLAM理论发展}
 \label{fig1.1}
 \end{figure}
+
+如果将优化变量抽象成节点，把运动方程和观测方程引入的误差抽象成边，就能得到SLAM对应的图模型$\boldsymbol{G}=\lbrace \boldsymbol{V}, \boldsymbol{E} \rbrace$，称为图优化\upcite{[1.37]}。求解图模型就等同于求解SLAM问题，研究者们还开发了专用的图优化/因子图优化的工具\upcite{[1.37],[1.38]}，被广泛地应用于当前的SLAM系统中。
 
 
 这些理论工具的引入，对SLAM系统的设计带来了很大改变。传统SLAM的主要任务是维护当前状态，按照EKF理论对均值和方差进行预测——更新，将过去的状态边缘化到当前状态的协方差中。然而，随着非线性优化的引入，视觉SLAM的基本流程转变为“抓取关键帧——非线性优化”的过程。通过在整个SLAM过程中定义一些具有重要意义的关键帧，就能够以它们为基本单位求解BA。这种行之有效的方法被称为基于关键帧的SLAM，是现在几乎所有视觉SLAM采用的方式。

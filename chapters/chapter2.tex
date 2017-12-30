@@ -233,17 +233,18 @@ f_x = T \sin\theta \approx T \theta
 \end{equation}
 根据方程\eqref{equ2.15}设计比例控制器
 \begin{equation}
+\label{equ2.16}
 f_x = K_{vx} \left(  v_x^* - v_x \right)
 \end{equation}
-联立方程\eqref{equ2.14}，\eqref{equ2.15}，\eqref{equ2.16}可以得到期望的俯仰姿态角$\theta^*$
+联立方程\eqref{equ2.14}，\eqref{equ2.15}，\eqref{equ2.17}可以得到期望的俯仰姿态角$\theta^*$
 \begin{equation}
-\label{equ2.16}
+\label{equ2.17}
 \theta^* = K_{vx} \left( K_{px} \left( p_x^* - p_x \right) - v_x \right)
 \end{equation}
 
 对于高度控制器，设计比例-微分控制器调节多旋翼无人机的推力
 \begin{equation}
-\label{equ2.17}
+\label{equ2.18}
 T = K_{pz} \left( z^* -z  \right) + K_{dz} \left( \dot{z}^* - \dot{z}  \right) + G_0
 \end{equation}
 其中，$z^*$表示目标高度，$z$，$\dot{z}$表示无人机反馈的高度位置和速度。$G_0$是前馈控制量，抵消重力的影响，避免高度控制中的定常干扰。

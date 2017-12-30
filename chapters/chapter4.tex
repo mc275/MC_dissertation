@@ -65,7 +65,7 @@ x_j^T F_{ji}x_p = x^T_jl_j=0 \  \rightarrow \  v_j = m \cdot u_j+n
 
 \begin{enumerate}[label={(\arabic*)}]
 
-\item 关键帧$K_j \in K$上的匹配像素$p_j$应处于图像像素梯度大的区域，像素梯度应大于阈值，$G(u_j)> \lambda_G$。
+\item 关键帧$K_j \in K$上的匹配像素$p_j$应位于图像像素梯度大的区域，像素梯度应大于阈值，$G(u_j)> \lambda_G$。
 
 \item 考虑到匹配的二义性与沿极线方向的像素梯度有关，因而匹配像素的梯度方向不能与极线方向垂直，满足$\vert \Uptheta(u_j)-\Uptheta_L \pm \pi \vert < \lambda_L$，其中$\Uptheta_L$表示基线方向。
 
@@ -248,11 +248,11 @@ d_p^* = \min_{d_p} \sum\limits_{j,n} \left( d_{j,n} - d_p r_z^{ji} X_p - t_z^{ji
 
 \begin{figure}[h]
     \centering
-       	  \subfigure[逆深度一致性检验前]
+       	  \subfigure[未采用逆深度一致性检验]
        	  {
           \includegraphics[scale=1]{figures/Fig4-3_a.pdf}                    
           }                    
-          \subfigure[逆深度一致性检验后]
+          \subfigure[采用逆深度一致性检验]
        	  {
           \includegraphics[scale=1]{figures/Fig4-3_b.pdf}
           }
