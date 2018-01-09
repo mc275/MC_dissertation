@@ -488,7 +488,7 @@ footskip=0.7cm% 页脚 1.8cm %
   \cleardoublepage
   \thispagestyle{empty}
   \begin{center}
-    \vspace*{79mm}
+    \vspace*{82mm}
     {\heiti\zihao{-2} \BIT@value@title}
     \vskip 40mm
     {\heiti \zihao{-2} \BIT@value@author}
@@ -619,9 +619,9 @@ footskip=0.7cm% 页脚 1.8cm %
    \begin{center}
     \setstretch{1.1}
     \begin{minipage}{1em}
-        {\heiti\zihao{3}\BIT@value@vtitle}
+        {\heiti\zihao{4}\BIT@value@vtitle}
         \vskip 2cm
-        {\heiti\zihao{3}\BIT@value@school}
+        {\heiti\zihao{4}\BIT@value@school}
     \end{minipage}
    \end{center}
     \clearpage
