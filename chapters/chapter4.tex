@@ -126,7 +126,7 @@ u_0^* = u_0 + {{ r_I(u_0) g(u_0)+ {1 \over \theta} r_G(u_0)q(u_0) } \over {g^2(u
 \label{equ4.9}
 \rho_p(u_j) = { r_z^{ji} X_p (u_j-c_x) - f_x r_x^{ji} X_p  \over - t_z^{ji}(u_j-c_x)+f_x t_x^{ji} }
 \end{equation}
-其中$r_x^{ji}$，$r_z^{ji}$表示两帧间的旋转矩阵$R_{ji}$的第一行和第三行，$t_x^{ji}$，$t_z^{ji}$表示两帧间的平移向量$t_{ji}$的第一个和第三个元素；$f_x$、$c_x$是相机内参；$\rho_p = { 1 \over s_p}$，$P_j= \left [ u_j, v_j, 1 \right ] ^T$，利用方程\eqref{equ4.9}可以得到像素$p$的匹配像素$p_j$的逆深度假设$N(\rho_j, \sigma_{\rho_j}^2)$。
+其中$r_x^{ji}$，$r_z^{ji}$表示两帧间的旋转矩阵$R_{ji}$的第一行和第三行，$t_x^{ji}$，$t_z^{ji}$表示两帧间的平移向量$t_{ji}$的第一个和第三个元素；$f_x$、$c_x$是相机内参；$\rho_p = { 1 \over s_p}$，$P_j= \left [ u_j, v_j, 1 \right ] ^T$，利用方程\eqref{equ4.9}可以得到像素$p$的逆深度假设$N(\rho_j, \sigma_{\rho_j}^2)$。
 \begin{equation}
 \label{equ4.10}
 \begin{aligned}
